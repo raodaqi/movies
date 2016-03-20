@@ -461,6 +461,10 @@ app.get('/test', function(req, res) {
   res.render('test', {});
 });
 
+app.get('/movie', function(req, res) {
+  res.render('movie', {});
+});
+
 // 最后，必须有这行代码来使 express 响应 HTTP 请求
 app.listen();
 
