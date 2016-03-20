@@ -6,18 +6,24 @@
 		height: 100%;
 		background-color: white;
 	}
-	.content{
+	div{
+  		overflow: hidden;
+	}
+	/*.content{
 		position: absolute;
 		width: 100%;
 		overflow-y: scroll;
 		left: 0;
 		right:0;
-		background-color: #F58180;
-		padding-bottom: 10px;
-	}
+		/*background-color: #F58180;
+		padding-bottom: 10px;*/
+	/*}*/
 	.announce-content{
 		bottom:0;
-		overflow-y: scroll !important;
+		/*overflow-y: scroll !important;*/
+		height: 90%;
+		width: 100%;
+		background-color: white;
 	}
 	.text-content{
 		display: block;
@@ -126,8 +132,11 @@
 	    opacity: 0.9;
 	}
 	.content{
-		background: url("/img/3-6-1.jpg");
-		background-size: cover;
+		/*background: url("/img/3-6-1.jpg");*/
+		/*background-size: cover;*/
+		height: 100%;
+		width: 100%;
+		overflow: hidden;
 	}
 	.announce-ul{
 		width: 100%;
@@ -158,28 +167,116 @@
 		text-overflow:ellipsis;
 		/*white-space: nowrap;*/
 	}
+	.well-received{
+		/*display: none;*/
+		background-color: red;
+		height: 100%;
+		width: 100%;
+	}
+	.watched{
+		display: none;
+		background-color: white;
+		height: 100%;
+		width: 100%;
+	}
+	.collect{
+		display: none;
+		background-color: black;
+		height: 100%;
+		width: 100%;
+	}
+	.button-li{
+		height: 10%;
+		width: 100%;
+		/*background-color: black;*/
+		box-sizing: border-box;
+		border-top: 1px solid gray;
+		/*border-top-color: black;*/
+	}
+	.icon-sytx{
+		float: left;
+		width: 33%;
+		font-size: 20px;
+		margin-top: 7px;
+		color: black;
+		line-height: 21px;
+		vertical-align: middle;
+		margin-top: 10px;
+		text-align: center;
+	}
+	.icon-zititubiao19{
+		float: left;
+		width: 33%;
+		font-size: 30px;
+		color: black;
+		line-height: 21px;
+		vertical-align: middle;
+		margin-top: 10px;
+		text-align: center;
+	}
+	.icon-retui{
+		float: left;
+		width: 33%;
+		font-size: 29px;
+		color: black;
+		line-height: 21px;
+		vertical-align: middle;
+		margin-top: 10px;
+		text-align: center;
+	}
+	.li-active{
+		color: 	#616161;
+	}
+	.button-word{
+		font-size: 5px;
+		height: 100%;
+		width: 100%;
+		text-align:center;
+	}
+	.word-align{
+		text-align:center; 
+	}
+	}
 </style>
 <body>
 	<div class="content">
 		<div class="announce-content">
-			<div class="announce-ul">
-				<% for(var i = 0; i < results.length; i++){ %>
-					<a href="<%= results[i].attributes.url %>">
-						<div class="announce-li">
-							<div class="announce-title">
-									<%= results[i].attributes.title %>
-							</div>
-							<div class="announce-time">
-									<%= results[i].attributes.time %>
-							</div>
-						</div>
-					</a>
-				<% } %>
-			</div>
+			<div class="well-received"></div>
+			<div class="watched"></div>
+			<div class="collect"></div>
+		</div>
+		<div class="button-li">
+		<div class="iconfont icon-retui li-active word-align"><a></a><div class="button-word">热映</div></div>
+		<div class="iconfont icon-sytx"><a></a><div class="button-word">待映</div></div>
+		<div class="iconfont icon-zititubiao19 word-align"><a></a><div class="button-word">关注</div></div>	
 		</div>
 	</div>
 
 <% include footer.ejs %>
 	<script type="text/javascript">
+	$(".icon-retui").click(function(){
+		$(this).addClass("li-active");
+		$(".icon-zititubiao19").removeClass("li-active");
+		$(".icon-sytx").removeClass("li-active");
+		$(".well-received").show();
+		$(".watched").hide();
+		$(".collect").hide();
+	})
+	$(".icon-zititubiao19").click(function(){
+		$(this).addClass("li-active");
+		$(".icon-retui").removeClass("li-active");
+		$(".icon-sytx").removeClass("li-active");
+		$(".watched").show();
+		$(".well-received").hide();
+		$(".collect").hide();
+	})
+	$(".icon-sytx").click(function(){
+		$(this).addClass("li-active");
+		$(".icon-zititubiao19").removeClass("li-active");
+		$(".icon-retui").removeClass("li-active");
+		$(".collect").show();
+		$(".watched").hide();
+		$(".well-received").hide();
+	})
 	</script>
 </html>
