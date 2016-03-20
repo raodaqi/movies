@@ -169,19 +169,93 @@
 	}
 	.well-received{
 		/*display: none;*/
-		background-color: red;
+		/*background-color: red;*/
 		height: 100%;
 		width: 100%;
+	}
+	.well-received-title{
+		width: 100%;
+		height: 50px;
+		/*background-color: red;*/
+		line-height:50px;
+		text-align: center;
+		font-size: 22px;
+	}
+	.well-received-content{
+		width: 100%;
+		height: 461px;
+		/*background-color: red;*/
+		overflow-y: scroll !important;
+	}
+	.well-received-movies{
+		height: auto;
+		width: 50%;
+		/*background-color: red;*/
+		float: left;
+	}
+	.well-received-movies-name{
+		width: 100%;
+		height: 30px;
+		line-height: 30px;
+		text-align: center;
+	}
+	.well-received-movies-photo{
+		width: 100%;
+		height: auto;
+		background-size: cover;
+	}
+	.well-received-movies-score{
+		width: 100%;
+		height: 30px;
+		line-height: 30px;
+		text-align: center;
 	}
 	.watched{
 		display: none;
-		background-color: white;
+		/*background-color: white;*/
 		height: 100%;
 		width: 100%;
 	}
+	.watched-title{
+		width: 100%;
+		height: 50px;
+		/*background-color: red;*/
+		line-height:50px;
+		text-align: center;
+		font-size: 22px;
+	}
+	.watched-content{
+		width: 100%;
+		height: 461px;
+		/*background-color: red;*/
+		overflow-y: scroll !important;
+	}
+	.watched-movies{
+		height: auto;
+		width: 50%;
+		/*background-color: red;*/
+		float: left;
+	}
+	.watched-movies-name{
+		width: 100%;
+		height: 30px;
+		line-height: 30px;
+		text-align: center;
+	}
+	.watched-movies-photo{
+		width: 100%;
+		height: auto;
+		background-size: cover;
+	}
+	.watched-movies-score{
+		width: 100%;
+		height: 30px;
+		line-height: 30px;
+		text-align: center;
+	}
 	.collect{
 		display: none;
-		background-color: black;
+		/*background-color: black;*/
 		height: 100%;
 		width: 100%;
 	}
@@ -239,21 +313,56 @@
 	}
 </style>
 <body>
-	<div class="content">
-		<div class="announce-content">
-			<div class="well-received"></div>
-			<div class="watched"></div>
-			<div class="collect"></div>
+<div class="content">
+	<div class="announce-content">
+		<div class="well-received">
+			<div class="well-received-title">热映</div>
+			<div class="well-received-content">
+			<% for(var i = 0; i < results.length ;i++ ){ %>  
+  			<%if(results[i].attributes.type == "showing"){%>
+				<div class="well-received-movies">
+					<div class="well-received-movies-name"><%=results[i].attributes.name%></div>
+					<div class="well-received-movies-photo"><img src="<%=results[i].attributes.img%>"></div>
+					<div class="well-received-movies-score">评分:<%=results[i].attributes.star%></div>
+				</div>
+				<%}%>
+				<%}%>
+			</div>
 		</div>
-		<div class="button-li">
-		<div class="iconfont icon-retui li-active word-align"><a></a><div class="button-word">热映</div></div>
-		<div class="iconfont icon-sytx"><a></a><div class="button-word">待映</div></div>
-		<div class="iconfont icon-zititubiao19 word-align"><a></a><div class="button-word">关注</div></div>	
+		<div class="watched">
+			<div class="watched-title">待映</div>
+			<div class="watched-content">
+			<% for(var i = 0; i < results.length ;i++ ){ %>  
+  			<%if(results[i].attributes.type == "upcoming"){%>
+				<div class="watched-movies">
+					<div class="watched-movies-name"><%=results[i].attributes.name%></div>
+					<div class="watched-movies-photo"><img src="<%=results[i].attributes.img%>"></div>
+					<div class="watched-movies-score">评分:<%=results[i].attributes.star%></div>
+				</div>
+				<%}%>
+				<%}%>
+			</div>
+		</div>
+		<div class="collect"></div>
+	</div>
+	<div class="button-li">
+		<div class="iconfont icon-retui li-active word-align">
+			<a></a>
+			<div class="button-word">热映</div>
+		</div>
+		<div class="iconfont icon-sytx">
+			<a></a>
+			<div class="button-word">待映</div>
+		</div>
+		<div class="iconfont icon-zititubiao19 word-align">
+			<a></a>
+			<div class="button-word">关注</div>
 		</div>
 	</div>
+</div>
 
 <% include footer.ejs %>
-	<script type="text/javascript">
+<script type="text/javascript">
 	$(".icon-retui").click(function(){
 		$(this).addClass("li-active");
 		$(".icon-zititubiao19").removeClass("li-active");
@@ -262,17 +371,17 @@
 		$(".watched").hide();
 		$(".collect").hide();
 	})
-	$(".icon-zititubiao19").click(function(){
+	$(".icon-sytx").click(function(){
 		$(this).addClass("li-active");
 		$(".icon-retui").removeClass("li-active");
-		$(".icon-sytx").removeClass("li-active");
+		$(".icon-zititubiao19").removeClass("li-active");
 		$(".watched").show();
 		$(".well-received").hide();
 		$(".collect").hide();
 	})
-	$(".icon-sytx").click(function(){
+	$(".icon-zititubiao19").click(function(){
 		$(this).addClass("li-active");
-		$(".icon-zititubiao19").removeClass("li-active");
+		$(".icon-sytx").removeClass("li-active");
 		$(".icon-retui").removeClass("li-active");
 		$(".collect").show();
 		$(".watched").hide();
