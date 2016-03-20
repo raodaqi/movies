@@ -7,23 +7,19 @@
 		background-color: white;
 	}
 	div{
-  		overflow: hidden;
+  		/*overflow: hidden;*/
 	}
-	/*.content{
-		position: absolute;
-		width: 100%;
-		overflow-y: scroll;
-		left: 0;
-		right:0;
-		/*background-color: #F58180;
-		padding-bottom: 10px;*/
-	/*}*/
+	.content{
+		/*background-color: gray;*/
+	}
 	.announce-content{
 		bottom:0;
 		/*overflow-y: scroll !important;*/
 		height: 90%;
 		width: 100%;
-		background-color: white;
+		box-sizing: border-box;
+		padding:0 5px;
+		background-color: #F3F3F3;
 	}
 	.text-content{
 		display: block;
@@ -136,7 +132,7 @@
 		/*background-size: cover;*/
 		height: 100%;
 		width: 100%;
-		overflow: hidden;
+		/*overflow: hidden;*/
 	}
 	.announce-ul{
 		width: 100%;
@@ -174,41 +170,64 @@
 		width: 100%;
 	}
 	.well-received-title{
+		position: fixed;
+		top:0;
 		width: 100%;
 		height: 50px;
-		/*background-color: red;*/
+		background-color: white;
 		line-height:50px;
 		text-align: center;
 		font-size: 22px;
+		border-bottom: 1px solid #EAEAEA;
+		z-index: 9999;
 	}
 	.well-received-content{
 		width: 100%;
-		height: 461px;
-		/*background-color: red;*/
+		height: auto;
+		background-color: #F3F3F3;
 		overflow-y: scroll !important;
+		margin-top: 10px;
+		margin-bottom: 50px;
+		overflow-x: hidden;
 	}
 	.well-received-movies{
 		height: auto;
 		width: 50%;
-		/*background-color: red;*/
+		text-align: center;
+		/*background-color: white;*/
+		box-sizing: border-box;
 		float: left;
+		/*display: inline-block;*/
 	}
 	.well-received-movies-name{
 		width: 100%;
-		height: 30px;
+		/*height: 30px;*/
+		box-sizing: border-box;
+		padding: 0 10px;
+		font-size: 15px;
 		line-height: 30px;
 		text-align: center;
 	}
 	.well-received-movies-photo{
 		width: 100%;
+		/*box-sizing: border-box;
+		margin:0 5px;*/
 		height: auto;
+		/*background-size: cover;*/
+	}
+	.well-received-movies-photo img{
+		position: relative;
+		width: 100%;
+		height:212px;
 		background-size: cover;
+		/*width: 90%;*/
 	}
 	.well-received-movies-score{
 		width: 100%;
-		height: 30px;
+		/*height: 30px;*/
 		line-height: 30px;
 		text-align: center;
+		font-size: 15px;
 	}
 	.watched{
 		display: none;
@@ -260,11 +279,13 @@
 		width: 100%;
 	}
 	.button-li{
-		height: 10%;
+		position: fixed;
+		bottom:0;
+		height: 50px;
 		width: 100%;
-		/*background-color: black;*/
+		background-color: white;
 		box-sizing: border-box;
-		border-top: 1px solid gray;
+		border-top: 1px solid #EAEAEA;
 		/*border-top-color: black;*/
 	}
 	.icon-sytx{
@@ -308,22 +329,34 @@
 		text-align:center;
 	}
 	.word-align{
-		text-align:center; 
+		text-align:center;
 	}
+	.well-hide{
+		height: 50px;
+		width: 100%;
+	}
+	.well-received-movies-page{
+		margin: 0 5px 10px 5px;
+		background-color: white;
 	}
 </style>
 <body>
 <div class="content">
+	<div class="well-received-title">热映</div>
 	<div class="announce-content">
 		<div class="well-received">
-			<div class="well-received-title">热映</div>
 			<div class="well-received-content">
-			<% for(var i = 0; i < results.length ;i++ ){ %>  
+				<div class="well-hide">
+					彩蛋
+				</div>
+			<% for(var i = 0; i < results.length ;i++ ){ %>
   			<%if(results[i].attributes.type == "showing"){%>
 				<div class="well-received-movies">
-					<div class="well-received-movies-name"><%=results[i].attributes.name%></div>
-					<div class="well-received-movies-photo"><img src="<%=results[i].attributes.img%>"></div>
-					<div class="well-received-movies-score">评分:<%=results[i].attributes.star%></div>
+					<div class="well-received-movies-page">
+						<div class="well-received-movies-photo"><img src="<%=results[i].attributes.img%>"></div>
+						<div class="well-received-movies-name"><%=results[i].attributes.name%></div>
+						<div class="well-received-movies-score">评分:<%=results[i].attributes.star%></div>
+					</div>
 				</div>
 				<%}%>
 				<%}%>
@@ -332,7 +365,7 @@
 		<div class="watched">
 			<div class="watched-title">待映</div>
 			<div class="watched-content">
-			<% for(var i = 0; i < results.length ;i++ ){ %>  
+			<% for(var i = 0; i < results.length ;i++ ){ %>
   			<%if(results[i].attributes.type == "upcoming"){%>
 				<div class="watched-movies">
 					<div class="watched-movies-name"><%=results[i].attributes.name%></div>

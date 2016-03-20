@@ -375,18 +375,37 @@ function getCUITImportentDataByAV(){
  	});
  }
 
- function getMovieIngData(){
+ function getMovieIngData(mid,type,callback){
 	 getUrlData("http://m.dianying.baidu.com/info/cinema/detail?cinemaId=3185&sfrom=newnuomi&from=webapp&sub_channel=nuomi_wap_rukou5&source=nuomi&c=75&cc=&kehuduan=#showing","UTF-8",{
 		 success:function(result){
 			 $ = cheerio.load(result);
 		 /*解析百度糯米正在上映和即将上演的电影*/
 		 console.log("正在上映");
-			//  $("#cover-wrapper .item").each(function(i, elem){
-			//  /*这里是百度糯米正在上映的电影表单和相应的电影id和链接*/
-			// 	 console.log($(this).attr("data-id"));
-			//  })
-			var data = _MOVIE.data;
-			console.log(data);
+			var data = {};
+			data = result.split("_MOVIE.data =")[1];
+			data = data.split("};")[0];
+			data = data + '};';
+			// data = eval("("+data+")");
+			// data = JSON.stringify(data);
+			// data = JSON.parse(data);
+			data = eval("data="+data);
+			// console.log(data.movies);
+			for(var i = 0; i < data.movies.length;i++){
+				if(data.movies[i].movieId == mid){
+					for(var j = 0; j < data.movies[i].schedules.length; j++){
+						/**************解析每天的电影场次****************/
+						// console.log(data.movies[i]);
+						// for(var k = 0; k <  data.movies[i].schedules[k].dailySchedules)
+
+						/*****************返回某个电影的上映时间和价格*****************/
+						if(type == "simple"){
+
+						}else{
+							callback.success(data.movies[i].schedules[j].dailySchedules);
+						}
+					}
+				}
+			}
 		 },
 		 error:function(error){
 			 console.log(error)
@@ -436,7 +455,15 @@ function getCUITImportentDataByAV(){
  }
 // getPriceFromNM(9889);
 // getMovieIngData();
-getMoviesData();
+// getMoviesData();
+getMovieIngData(9932,"",{
+	success:function(){
+
+	},
+	error:function(){
+
+	}
+})
 
 app.get('/announce', function(req, res) {
 		var query = new AV.Query('Announce');
