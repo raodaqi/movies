@@ -30,10 +30,10 @@ app.use(AV.Cloud.CookieSession({ secret: 'my secret', maxAge: 3600000, fetchUser
 **保存公告数据
 ** data:一个保存了表单信息的json。find：需要查找是否存在相同的元素。callback：回调函数；成功返回“success”，失败返回“error”；
  */
-function saveAnnounceData(data,find,callback){
-	var post = AV.Object.new('Announce');
+function saveMoviesData(data,find,callback){
+	var post = AV.Object.new('Movies');
 	console.log(data);
-	var query = new AV.Query('Announce');
+	var query = new AV.Query('Movies');
 	query.equalTo(find, data[find]);
 	query.find().then(function(results) {
 	  console.log('Successfully retrieved ' + results.length + ' posts.');
@@ -126,10 +126,6 @@ function getUrlData(url,charset,callback){
 	    });
 	    res.on('end', function() {
 					var buf = new Buffer(source, 'binary');
-					// var str = iconv.decode(buf, 'GBK');
-					// var str = iconv.decode(buf, 'UTF-8');
-					// console.log(source);
-
 					if(!charset){
 						charset = "GBK";
 					}
@@ -291,53 +287,6 @@ function getCUITImportentDataByAV(){
 // });
 
 
-// var url = "http://www1.cuit.edu.cn/NewsList.asp?bm=32&type=448";
-// http.get(url, function(res) {
-//     var source = "";
-// 		res.setEncoding('binary');
-//     res.on('data', function(data) {
-//         source += data;
-//     });
-//     res.on('end', function() {
-// 				var buf = new Buffer(source, 'binary');
-// 				var str = iconv.decode(buf, 'GBK');
-// 				$ = cheerio.load(str);
-// 				var time = '';
-// 				var title = '';
-// 				var url = '';
-// 				$(".newstext table td a").each(function(i, elem){
-// 					if($(this).text()){
-// 						if(i%2){
-// 							//这里显示的是时间
-// 							// console.log($(this).text());
-// 							time = $(this).text();
-// 						}else{
-// 							//这里显示的是标题
-// 							// console.log($(this).text());
-// 							// console.log($(this).attr("href"));
-// 							title = $(this).text();
-// 							url = $(this).attr("href");
-// 							var data = {};
-// 							data.time = time;
-// 							data.title = title;
-// 							data.url = url;
-// 							saveAnnounceData(data,"title",{
-// 								success:function(result){
-// 									console.log(result);
-// 								},
-// 								error:function(error){
-// 									console.log(error)
-// 								}
-// 							});
-// 						}
-// 					}
-// 				})
-//     });
-// }).on('error', function() {
-//     console.log("获取数据出现错误");
-// });
-
-
 /*
 **爬取正在上映电影
  */
@@ -361,15 +310,11 @@ function getCUITImportentDataByAV(){
  // 	});
  // }
  //
- function getMovieIngData(){
+ function getMoviesData(){
  	getUrlData("http://cd.nuomi.com/pcindex/main/filmlist?type=1","UTF-8",{
  		success:function(result){
  			$ = cheerio.load(result);
 			/*解析百度糯米正在上映和即将上演的电影*/
-			// $(".j-sliders").each(function(i, elem){
-			// 	console.log(i);
-			// });
-
 			console.log("正在上映");
  			$("#showing-movies-j .j-sliders .item").each(function(i, elem){
 				/*这里是百度糯米正在上映的电影表单和相应的电影id和链接*/
@@ -377,8 +322,23 @@ function getCUITImportentDataByAV(){
 				var url = $(this).attr("href");
 				var name = $(this).children("h5").text();
 				var mid = $(this).attr("href").split("/")[2];
+				var star = $(this).find(".star-cc").text().replace(/[\r\n]/g,"");
 				console.log(name);
-				getPriceFromNM(mid);
+				var data = {};
+				data.mid = mid;
+				data.name = name;
+				data.url = url;
+				data.img = img;
+				data.star = star;
+				data.type = 'showing';
+				saveMoviesData(data,"name",{
+					success:function(result){
+					},
+					error:function(error){
+						console.log(error)
+					}
+				});
+				// getPriceFromNM(mid);
  			})
 			console.log("即将上映");
 			$("#upcoming-movies-j .j-sliders .item").each(function(i, elem){
@@ -388,7 +348,24 @@ function getCUITImportentDataByAV(){
 				var name = $(this).children("h5").text();
 				var mid = $(this).attr("href").split("/")[2];
 				var releaseDate = $(this).children(".release-date").text();
+				var star = $(this).find(".star-cc").text().replace(/[\r\n]/g,"");
 				console.log(releaseDate);
+				var data = {};
+				data.mid = mid;
+				data.name = name;
+				data.url = url;
+				data.img = img;
+				data.star = star;
+				data.releaseDate = releaseDate;
+				data.type = 'upcoming';
+				saveMoviesData(data,"name",{
+					success:function(result){
+						// console.log(result);
+					},
+					error:function(error){
+						console.log(error)
+					}
+				});
 				// getPriceFromNM(mid);
  			})
  		},
@@ -397,6 +374,26 @@ function getCUITImportentDataByAV(){
  		}
  	});
  }
+
+ function getMovieIngData(){
+	 getUrlData("http://m.dianying.baidu.com/info/cinema/detail?cinemaId=3185&sfrom=newnuomi&from=webapp&sub_channel=nuomi_wap_rukou5&source=nuomi&c=75&cc=&kehuduan=#showing","UTF-8",{
+		 success:function(result){
+			 $ = cheerio.load(result);
+		 /*解析百度糯米正在上映和即将上演的电影*/
+		 console.log("正在上映");
+			//  $("#cover-wrapper .item").each(function(i, elem){
+			//  /*这里是百度糯米正在上映的电影表单和相应的电影id和链接*/
+			// 	 console.log($(this).attr("data-id"));
+			//  })
+			var data = _MOVIE.data;
+			console.log(data);
+		 },
+		 error:function(error){
+			 console.log(error)
+		 }
+	 });
+ }
+
  function getPriceFromNM(mid){
 	 var cinemaid = '2a70b03e63fdb05e774ff173';
 	 var mid = mid;
@@ -438,7 +435,8 @@ function getCUITImportentDataByAV(){
 	});
  }
 // getPriceFromNM(9889);
-getMovieIngData();
+// getMovieIngData();
+getMoviesData();
 
 app.get('/announce', function(req, res) {
 		var query = new AV.Query('Announce');
@@ -462,7 +460,17 @@ app.get('/test', function(req, res) {
 });
 
 app.get('/movie', function(req, res) {
-  res.render('movie', {});
+	var query = new AV.Query('Movies');
+	query.addDescending('star');
+	query.find().then(function(results) {
+		// 处理返回的结果数据
+		console.log(results);
+		res.render('movie', {results:results});
+	}, function(error) {
+		console.log('Error: ' + error.code + ' ' + error.message);
+		res.render('movie', {results:error});
+	});
+  // res.render('movie', {});
 });
 
 // 最后，必须有这行代码来使 express 响应 HTTP 请求
