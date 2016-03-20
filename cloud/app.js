@@ -10,9 +10,9 @@ var http =  require('http');
 var cheerio = require('cheerio');
 var iconv = require('iconv-lite');
 
-var APP_ID = 'H3uzSTIRP8OPpXNE7qxCrhf1-gzGzoHsz'; // 你的 app id
-var APP_KEY =  'AbBvTAexCid6dIJS2LoH0Ytp'; // 你的 app key
-var MASTER_KEY =  'q7VGCifyLCEU1MLFaE7A9mYK'; // 你的 master key
+var APP_ID = 'e3spBa4YjoxnmSLeo5VLAWC1-gzGzoHsz'; // 你的 app id
+var APP_KEY =  'YgpmPcXI1uql1Rwr2b85IJRb'; // 你的 app key
+var MASTER_KEY =  'hwzTQUzTGWjIctpJq5h5HUpd'; // 你的 master key
 
 AV.initialize(APP_ID, APP_KEY, MASTER_KEY);
 
