@@ -18,7 +18,7 @@
 		height: 90%;
 		width: 100%;
 		box-sizing: border-box;
-		padding:0 5px;
+		/*padding:0 5px;*/
 		background-color: #F3F3F3;
 	}
 	.text-content{
@@ -201,12 +201,16 @@
 	}
 	.well-received-movies-name{
 		width: 100%;
-		/*height: 30px;*/
+		height: 30px;
 		box-sizing: border-box;
 		padding: 0 10px;
 		font-size: 15px;
 		line-height: 30px;
 		text-align: center;
+		white-space:nowrap; 
+		text-overflow:ellipsis; 
+		-o-text-overflow:ellipsis; 
+		overflow: hidden; 
 	}
 	.well-received-movies-photo{
 		width: 100%;
@@ -236,47 +240,77 @@
 		width: 100%;
 	}
 	.watched-title{
+		position: fixed;
+		top:0;
 		width: 100%;
 		height: 50px;
-		/*background-color: red;*/
+		background-color: white;
 		line-height:50px;
 		text-align: center;
 		font-size: 22px;
+		border-bottom: 1px solid #EAEAEA;
+		z-index: 9999;
+		display: none;
 	}
 	.watched-content{
 		width: 100%;
-		height: 461px;
-		/*background-color: red;*/
+		height: auto;
+		background-color: #F3F3F3;
 		overflow-y: scroll !important;
+		margin-top: 10px;
+		margin-bottom: 50px;
+		overflow-x: hidden;
 	}
 	.watched-movies{
 		height: auto;
 		width: 50%;
 		/*background-color: red;*/
 		float: left;
+		box-sizing: border-box;
+		text-align: center;
 	}
 	.watched-movies-name{
 		width: 100%;
 		height: 30px;
+		box-sizing: border-box;
+		padding: 0 10px;
+		font-size: 15px;
 		line-height: 30px;
-		text-align: center;
+		text-align: center;		
+		text-overflow:ellipsis; 
+		-o-text-overflow:ellipsis; 
+		overflow: hidden;
 	}
 	.watched-movies-photo{
 		width: 100%;
 		height: auto;
-		background-size: cover;
+		/*background-size: cover;*/
 	}
-	.watched-movies-score{
+	.watched-movies-photo img{
+		position: relative;
 		width: 100%;
-		height: 30px;
-		line-height: 30px;
-		text-align: center;
+		height:212px;
+		background-size: cover;
+		/*width: 90%;*/
 	}
 	.collect{
 		display: none;
 		/*background-color: black;*/
 		height: 100%;
 		width: 100%;
+	}
+	.collect-title{
+		position: fixed;
+		top:0;
+		width: 100%;
+		height: 50px;
+		background-color: white;
+		line-height:50px;
+		text-align: center;
+		font-size: 22px;
+		border-bottom: 1px solid #EAEAEA;
+		z-index: 9999;
+		display: none;
 	}
 	.button-li{
 		position: fixed;
@@ -346,79 +380,94 @@
 	<div class="announce-content">
 		<div class="well-received">
 			<div class="well-received-content">
-				<div class="well-hide">
-					彩蛋
-				</div>
-			<% for(var i = 0; i < results.length ;i++ ){ %>
-  			<%if(results[i].attributes.type == "showing"){%>
+				<div class="well-hide">彩蛋</div>
+				<% for(var i = 0; i < results.length ;i++ ){ %>
+				<%if(results[i].attributes.type == "showing"){%>
 				<div class="well-received-movies">
 					<div class="well-received-movies-page">
-						<div class="well-received-movies-photo"><img src="<%=results[i].attributes.img%>"></div>
-						<div class="well-received-movies-name"><%=results[i].attributes.name%></div>
-						<div class="well-received-movies-score">评分:<%=results[i].attributes.star%></div>
+						<div class="well-received-movies-photo">
+							<img src="<%=results[i].attributes.img%>"></div>
+						<div class="well-received-movies-name">
+							<%=results[i].attributes.name%></div>
+						<div class="well-received-movies-score">
+							评分:
+							<%=results[i].attributes.star%></div>
 					</div>
 				</div>
 				<%}%>
-				<%}%>
+				<%}%></div>
+		</div>
+		<div class="watched-title">待映</div>
+		<div class="announce-content">
+			<div class="watched">
+				<div class="watched-content">
+					<div class="well-hide">彩蛋</div>
+					<% for(var i = 0; i < results.length ;i++ ){ %>
+					<%if(results[i].attributes.type == "upcoming"){%>
+					<div class="watched-movies">
+						<div class="well-received-movies-page">
+							<div class="watched-movies-photo">
+								<img src="<%=results[i].attributes.img%>"></div>
+							<div class="watched-movies-name">
+								<%=results[i].attributes.name%></div>
+						</div>
+					</div>
+					<%}%>
+					<%}%></div>
+			</div>
+			<div class="collect-title">待映</div>
+			<div class="collect"></div>
+		</div>
+		<div class="button-li">
+			<div class="iconfont icon-retui li-active word-align">
+				<a></a>
+				<div class="button-word">热映</div>
+			</div>
+			<div class="iconfont icon-sytx">
+				<a></a>
+				<div class="button-word">待映</div>
+			</div>
+			<div class="iconfont icon-zititubiao19 word-align">
+				<a></a>
+				<div class="button-word">关注</div>
 			</div>
 		</div>
-		<div class="watched">
-			<div class="watched-title">待映</div>
-			<div class="watched-content">
-			<% for(var i = 0; i < results.length ;i++ ){ %>
-  			<%if(results[i].attributes.type == "upcoming"){%>
-				<div class="watched-movies">
-					<div class="watched-movies-name"><%=results[i].attributes.name%></div>
-					<div class="watched-movies-photo"><img src="<%=results[i].attributes.img%>"></div>
-					<div class="watched-movies-score">评分:<%=results[i].attributes.star%></div>
-				</div>
-				<%}%>
-				<%}%>
-			</div>
-		</div>
-		<div class="collect"></div>
 	</div>
-	<div class="button-li">
-		<div class="iconfont icon-retui li-active word-align">
-			<a></a>
-			<div class="button-word">热映</div>
-		</div>
-		<div class="iconfont icon-sytx">
-			<a></a>
-			<div class="button-word">待映</div>
-		</div>
-		<div class="iconfont icon-zititubiao19 word-align">
-			<a></a>
-			<div class="button-word">关注</div>
-		</div>
-	</div>
-</div>
 
-<% include footer.ejs %>
-<script type="text/javascript">
+	<% include footer.ejs %>
+	<script type="text/javascript">
 	$(".icon-retui").click(function(){
 		$(this).addClass("li-active");
 		$(".icon-zititubiao19").removeClass("li-active");
 		$(".icon-sytx").removeClass("li-active");
 		$(".well-received").show();
+		$(".well-received-title").show();
+		$(".watched-title").hide();
 		$(".watched").hide();
 		$(".collect").hide();
+		$(".collect-title").hide();
 	})
 	$(".icon-sytx").click(function(){
 		$(this).addClass("li-active");
 		$(".icon-retui").removeClass("li-active");
 		$(".icon-zititubiao19").removeClass("li-active");
 		$(".watched").show();
+		$(".watched-title").show();
+		$(".well-received-title").hide();
 		$(".well-received").hide();
 		$(".collect").hide();
+		$(".collect-title").hide();
 	})
 	$(".icon-zititubiao19").click(function(){
 		$(this).addClass("li-active");
 		$(".icon-sytx").removeClass("li-active");
 		$(".icon-retui").removeClass("li-active");
 		$(".collect").show();
+		$(".collect-title").show();
 		$(".watched").hide();
+		$(".watched-title").hide();
 		$(".well-received").hide();
+		$(".well-received-title").hide();
 	})
 	</script>
 </html>
