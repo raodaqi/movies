@@ -226,13 +226,6 @@
 		background-size: cover;
 		/*width: 90%;*/
 	}
-	.well-received-movies-score{
-		width: 100%;
-		/*height: 30px;*/
-		line-height: 30px;
-		text-align: center;
-		font-size: 15px;
-	}
 	.watched{
 		display: none;
 		/*background-color: white;*/
@@ -389,9 +382,6 @@
 							<img src="<%=results[i].attributes.img%>"></div>
 						<div class="well-received-movies-name">
 							<%=results[i].attributes.name%></div>
-						<div class="well-received-movies-score">
-							评分:
-							<%=results[i].attributes.star%></div>
 					</div>
 				</div>
 				<%}%>
@@ -415,7 +405,7 @@
 					<%}%>
 					<%}%></div>
 			</div>
-			<div class="collect-title">待映</div>
+			<div class="collect-title">关注</div>
 			<div class="collect"></div>
 		</div>
 		<div class="button-li">
