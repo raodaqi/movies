@@ -390,7 +390,7 @@ function getCUITImportentDataByAV(){
 			$ = cheerio.load(result);
 		 /*解析百度糯米正在上映和即将上演的电影*/
 		 console.log("正在上映");
-		 console.log(result);
+		//  console.log(result);
 			var data = {};
 			data = result.split("_MOVIE.data =")[1];
 			data = data.split("};")[0];
@@ -401,13 +401,16 @@ function getCUITImportentDataByAV(){
 			data = eval("data="+data);
 			// console.log(data.movies);
 			for(var i = 0; i < data.movies.length;i++){
-				console.log(data.movies[i].name);
 				if(data.movies[i].movieId == mid){
+					console.log(data.movies[i].name);
+					console.log(data.movies[i].schedules);
+					callback.success(data.movies[i].schedules);
 					for(var j = 0; j < data.movies[i].schedules.length; j++){
 						/*****************返回某个电影的上映时间和价格*****************/
-						callback.success(data.movies[i].schedules[j].dailySchedules);
+						// callback.success(data.movies[i].schedules[j].dailySchedules);
 					}
 				}else if(!mid){
+					console.log(data.movies[i].name);
 					for(var j = 0; j < data.movies[i].schedules.length; j++){
 							/**************解析所有的电影场次****************/
 							// console.log(data.movies[i].schedules[j]);
@@ -474,15 +477,64 @@ function getCUITImportentDataByAV(){
 // getMovieIngData();
 // getMoviesData();
 
-getMovieIngData(9932,"",{
-	success:function(result){
-		console.log(result);
-	},
-	error:function(error){
-		console.log(error);
-	}
-})
+// getMovieIngData(9932,"",{
+// 	success:function(result){
+// 		console.log(result);
+// 	},
+// 	error:function(error){
+// 		console.log(error);
+// 	}
+// })
+//
 
+function getMovieDetailFromNM(mid,callback){
+	var mid = mid;
+	AV.Cloud.httpRequest({
+	 method: 'GET',
+	 url: 'http://m.dianying.baidu.com/info/movie/detail?movie_id='+mid+'&sfrom=newnuomi&from=webapp&sub_channel=nuomi_wap_rukou5&source=nuomi&c=75&cc=&kehuduan=',
+	 success: function(httpResponse) {
+		 // console.log(httpResponse.text);
+		 var result = httpResponse.text;
+		 $ = cheerio.load(result);
+		//  console.log(result);
+		 /***********这里解析日期***********/
+		 var movieDetail = {};
+		 movieDetail.name = $(".list-name").text();
+		 movieDetail.star = $(".score-normal").text();
+		 var detail = {};
+		 var cast = {};
+		 $(".detail-info .detail").each(function(i,ele){
+			//  console.log($(this).text().replace(/[ ]/g,"").replace(/(\n)+|(\r\n)+/g, ""));
+			//  detail[i] =  $(this).text().replace(/[ ]/g,"").replace(/(\n)+|(\r\n)+/g, "");
+			//  console.log($(this).children(".th").text());
+			//  console.log($(this).children(".td").text());
+				var text = $(this).text().replace(/[ ]/g,"").replace(/(\n)+|(\r\n)+/g, "");
+				if(i == 0){
+					detail["介绍"] = text.split(":")[0];
+				}else{
+					detail[text.split(":")[0]] = text.split(":")[1];
+				}
+			})
+			console.log(detail);
+			movieDetail.detail = detail;
+		 $(".cast .tr").each(function(i,ele){
+			 var th = $(this).children(".th").text();
+			 var td = $(this).children(".td").text();
+			//  console.log($(this).text().replace(/[ ]/g,"").replace(/(\n)+|(\r\n)+/g, ""));
+			//  cast[i] = $(this).text().replace(/[ ]/g,"").replace(/(\n)+|(\r\n)+/g, "");
+				cast[th] = td;
+			})
+			movieDetail.cast = cast;
+			console.log(movieDetail);
+			callback.success(movieDetail);
+			// console.log($(".cast").)
+	 },
+	 error: function(httpResponse) {
+		 console.error('Request failed with response code ' + httpResponse.status);
+	 }
+ });
+}
+// getMovieDetailFromNM("9932");
 app.get('/announce', function(req, res) {
 		var query = new AV.Query('Announce');
 		query.addDescending('time');
@@ -494,6 +546,47 @@ app.get('/announce', function(req, res) {
 			console.log('Error: ' + error.code + ' ' + error.message);
 			res.render('announce', {results:error});
 		});
+});
+
+app.get('/detail/:id', function(req, res) {
+	var id = req.params.id;
+	console.log(id);
+	if(id){
+		// getMovieIngData(id,"",{
+		// 	success:function(price){
+		// 		console.log(price);
+				getMovieDetailFromNM(id,{
+					success:function(movieDetail){
+						// console.log(result);
+						res.render('dt', {movieDetail:movieDetail,id:id});
+					},
+					error:function(error){
+						console.log(error);
+						res.render('dt', {movieDetail:''});
+					}
+				})
+		// 	},
+		// 	error:function(error){
+		// 		console.log(error);
+		// 	}
+		// })
+	}else{
+		res.render('dt', {movieDetail:""});
+	}
+});
+app.post('/price', function(req, res) {
+	var id = req.body.id;
+	console.log(id);
+	getMovieIngData(id,"",{
+		success:function(price){
+			console.log(price);
+			res.send(price);
+		},
+		error:function(error){
+			console.log(error);
+			// res.send(error);
+		}
+	})
 });
 
 app.get('/', function(req, res) {
