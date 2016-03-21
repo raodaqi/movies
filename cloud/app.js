@@ -376,11 +376,20 @@ function getCUITImportentDataByAV(){
  }
 
  function getMovieIngData(mid,type,callback){
-	 getUrlData("http://m.dianying.baidu.com/info/cinema/detail?cinemaId=3185&sfrom=newnuomi&from=webapp&sub_channel=nuomi_wap_rukou5&source=nuomi&c=75&cc=&kehuduan=#showing","UTF-8",{
-		 success:function(result){
-			 $ = cheerio.load(result);
+	//  getUrlData("http://m.dianying.baidu.com/info/cinema/detail?cinemaId=3185&sfrom=newnuomi&from=webapp&sub_channel=nuomi_wap_rukou5&source=nuomi&c=75&cc=&kehuduan=","UTF-8",{
+	// 	 success:function(result){
+	AV.Cloud.httpRequest({
+	  url: 'http://m.dianying.baidu.com/info/cinema/detail?cinemaId=3185&sfrom=newnuomi&from=webapp&sub_channel=nuomi_wap_rukou5&source=nuomi&c=75&cc=&kehuduan=',
+		headers: {
+			"Accept":"text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+	    'User-Agent':'Mozilla/5.0 (iPhone; CPU iPhone OS 9_1 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13B143 Safari/601.1'
+	  },
+	  success: function(httpResponse) {
+			var result = httpResponse.text;
+			$ = cheerio.load(result);
 		 /*解析百度糯米正在上映和即将上演的电影*/
 		 console.log("正在上映");
+		 console.log(result);
 			var data = {};
 			data = result.split("_MOVIE.data =")[1];
 			data = data.split("};")[0];
@@ -391,18 +400,24 @@ function getCUITImportentDataByAV(){
 			data = eval("data="+data);
 			// console.log(data.movies);
 			for(var i = 0; i < data.movies.length;i++){
+				console.log(data.movies[i].name);
 				if(data.movies[i].movieId == mid){
 					for(var j = 0; j < data.movies[i].schedules.length; j++){
-						/**************解析每天的电影场次****************/
-						// console.log(data.movies[i]);
-						// for(var k = 0; k <  data.movies[i].schedules[k].dailySchedules)
-
 						/*****************返回某个电影的上映时间和价格*****************/
-						if(type == "simple"){
-
-						}else{
-							callback.success(data.movies[i].schedules[j].dailySchedules);
-						}
+						callback.success(data.movies[i].schedules[j].dailySchedules);
+					}
+				}else if(!mid){
+					for(var j = 0; j < data.movies[i].schedules.length; j++){
+							/**************解析所有的电影场次****************/
+							// console.log(data.movies[i].schedules[j]);
+							console.log(data.movies[i].schedules[j].dateText);
+							for(var k = 0; k <  data.movies[i].schedules[j].dailySchedules.length;k++){
+								// console.log(data.movies[i].schedules[j].dailySchedules[k]);
+								var star = data.movies[i].schedules[j].dailySchedules[k].star;
+								var end = data.movies[i].schedules[j].dailySchedules[k].end;
+								var price = data.movies[i].schedules[j].dailySchedules[k].price;
+								console.log(price);
+							}
 					}
 				}
 			}
@@ -441,6 +456,7 @@ function getCUITImportentDataByAV(){
 					console.log($(this).find(".nuomi-price").text());
 					console.log(i);
 				})
+
 			})
 			// $(".table tr").each(function(i,ele){
 			// 	console.log($(this).children("td").first().text());
@@ -456,12 +472,13 @@ function getCUITImportentDataByAV(){
 // getPriceFromNM(9889);
 // getMovieIngData();
 // getMoviesData();
+
 getMovieIngData(9932,"",{
-	success:function(){
-
+	success:function(result){
+		console.log(result);
 	},
-	error:function(){
-
+	error:function(error){
+		console.log(error);
 	}
 })
 
