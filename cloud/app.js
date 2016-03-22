@@ -24,7 +24,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 // app.use(express.static(__dirname, 'public'));
 app.use(AV.Cloud.CookieSession({ secret: 'my secret', maxAge: 3600000, fetchUser: true }));
 
-
+//调用发送邮件功能
+var nodemailer = require("nodemailer");
 
 /*
 **保存公告数据
@@ -499,6 +500,7 @@ function getMovieDetailFromNM(mid,callback){
 		//  console.log(result);
 		 /***********这里解析日期***********/
 		 var movieDetail = {};
+		 movieDetail.img = $(".poster").attr("src");
 		 movieDetail.name = $(".list-name").text();
 		 movieDetail.star = $(".score-normal").text();
 		 var detail = {};
@@ -534,6 +536,39 @@ function getMovieDetailFromNM(mid,callback){
 	 }
  });
 }
+
+/**********************发送邮件****************************/
+function sendEmail(to,movie,platform){
+	//这里是初始化，需要定义发送的协议，还有你的服务邮箱，当然包括密码了
+	var smtpTransport = nodemailer.createTransport("SMTP",{
+	    service: "Gmail",
+	    auth: {
+	        user: "raodaqi@gmail.com",
+	        pass: "rdq951019"
+	    }
+	});
+	//邮件配置，发送一下 unicode 符合的内容试试！
+	var mailOptions = {
+	    from: "raodaqi@gmail.com",       // 发送地址
+	    // to: "bar@blurdybloop.com, baz@blurdybloop.com", // 接收列表
+	    to: "598471284@qq.com,260940356@qq.com",
+	    subject: "您关注的电影疯狂动物城在百度糯米上价格低于您设置的价格  ",                             // 邮件主题
+	    text: "快去糯米上购买吧。祝你观影愉快",                          // 文本内容
+	    html: ""                    // html内容
+	}
+	//开始发送邮件
+	smtpTransport.sendMail(mailOptions, function(error, response){
+	    if(error){
+	        console.log(error);
+	    }else{
+	        console.log("邮件已经发送: " + response.message);
+	    }
+	    //如果还需要实用其他的 smtp 协议，可将当前回话关闭
+	    //smtpTransport.close();
+	});
+}
+
+
 // getMovieDetailFromNM("9932");
 app.get('/announce', function(req, res) {
 		var query = new AV.Query('Announce');
