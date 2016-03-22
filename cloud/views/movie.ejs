@@ -465,9 +465,9 @@
 		$(".well-received-title").hide();
 	})
 	$(".movies").click(function(){
-		var mid=$("this").attr("data-mid");
+		var mid=$(this).attr("data-mid");
 		console.log(mid);
-		window.location.href = "detail/"+mid;
+		window.location.href = "/detail/"+mid;
 	})
 	</script>
 </html>
