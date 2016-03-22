@@ -1,0 +1,68 @@
+<% include header.ejs %>
+<style type="text/css">
+	body,html{
+		margin: 0;
+		padding:0;
+		height: 100%;
+		background-color: white;
+	}
+	div{
+  		/*overflow: hidden;*/
+	}
+	.movie-information{
+		width: 100%;
+		height: auto;
+		overflow-y:scroll;
+		/*background-color: blue; */
+		position: absolute;
+		z-index: 1;
+		top: 300px;
+	}
+	.movie-information-title{
+		position: fixed;
+		top:0;
+		width: 100%;
+		height: 50px;
+		background-color: white;
+		line-height:50px;
+		text-align: center;
+		font-size: 18px;
+		border-bottom: 1px solid #EAEAEA;
+		z-index: 9999;
+		/*display: none;*/
+	}
+	.movie-information-photo {
+		width: 100%;
+		height:auto;
+		/*background-color: red;*/
+		top: 50px;
+		position: fixed;
+	}
+	.movie-information-photo img{
+		width: 100%;
+		height: 250px;
+		background-size: cover;
+	}
+	.movie{
+		display: none;
+		width: 100%;
+		height: 100%;
+		position: relative;
+	}
+	.movie-information-introduction{
+		/*font-size: 50px;*/
+		/*background-color: blue;*/
+	}
+	</style>
+	<body>
+	<div class="movie">
+		<div class="movie-information-title">电影</div>
+		<div class="movie-information-photo"></div>
+		<div class="movie-information">
+			<div class="movie-information-introduction"></div>
+		</div>
+	</div>
+	<% include footer.ejs %>
+<script type="text/javascript">
+	</script>
+</html>
