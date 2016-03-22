@@ -558,11 +558,11 @@ app.get('/detail/:id', function(req, res) {
 				getMovieDetailFromNM(id,{
 					success:function(movieDetail){
 						// console.log(result);
-						res.render('dt', {movieDetail:movieDetail,id:id});
+						res.render('detail', {movieDetail:movieDetail,id:id});
 					},
 					error:function(error){
 						console.log(error);
-						res.render('dt', {movieDetail:''});
+						res.render('detail', {movieDetail:''});
 					}
 				})
 		// 	},
@@ -571,7 +571,7 @@ app.get('/detail/:id', function(req, res) {
 		// 	}
 		// })
 	}else{
-		res.render('dt', {movieDetail:""});
+		res.render('detail', {movieDetail:""});
 	}
 });
 app.post('/price', function(req, res) {
