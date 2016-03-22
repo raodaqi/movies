@@ -367,50 +367,6 @@
 		margin: 0 5px 10px 5px;
 		background-color: white;
 	}
-	.movie-information{
-		width: 100%;
-		height: auto;
-		overflow-y:scroll;
-		/*background-color: blue; */
-		position: absolute;
-		z-index: 1;
-		top: 300px;
-	}
-	.movie-information-title{
-		position: fixed;
-		top:0;
-		width: 100%;
-		height: 50px;
-		background-color: white;
-		line-height:50px;
-		text-align: center;
-		font-size: 18px;
-		border-bottom: 1px solid #EAEAEA;
-		z-index: 9999;
-		/*display: none;*/
-	}
-	.movie-information-photo {
-		width: 100%;
-		height:auto;
-		/*background-color: red;*/
-		top: 50px;
-		position: fixed;
-	}
-	.movie-information-photo img{
-		width: 100%;
-		height: 250px;
-		background-size: cover;
-	}
-	.movie{
-		display: none;
-		width: 100%;
-		height: 100%;
-		position: relative;
-	}
-	.movie-information-introduction{
-		/*font-size: 50px;*/
-		/*background-color: blue;*/
-	}
 </style>
 <body>
 <div class="content">
@@ -424,7 +380,7 @@
 				<div class="well-received-movies">
 					<div class="well-received-movies-page">
 						<div class="well-received-movies-photo">
-							<a class="movies">
+							<a class="movies" data-mid="<%=results[i].attributes.mid%>">
 								<img src="<%=results[i].attributes.img%>"></a>
 						</div>
 						<div class="well-received-movies-name">
@@ -444,7 +400,7 @@
 					<div class="watched-movies">
 						<div class="well-received-movies-page">
 							<div class="watched-movies-photo">
-								<a class="movies">
+								<a class="movies" data-mid="<%=results[i].attributes.mid%>">
 									<img src="<%=results[i].attributes.img%>"></a>
 							</div>
 							<div class="watched-movies-name">
@@ -471,14 +427,6 @@
 				<div class="button-word">关注</div>
 			</div>
 		</div>
-	</div>
-</div>
-<div class="movie">
-	<div class="movie-information-title">电影</div>
-	<div class="movie-information-photo">
-		<!-- <img src="/img/cherry.jpg"></div> -->
-	<div class="movie-information">
-		<div class="movie-information-introduction"></div>
 	</div>
 </div>
 <% include footer.ejs %>
@@ -517,8 +465,9 @@
 		$(".well-received-title").hide();
 	})
 	$(".movies").click(function(){
-		$(".movie").show();
-		$(".content").hide();
+		var mid=$("this").attr("data-mid");
+		console.log(mid);
+		window.location.href = "detail/"+mid;
 	})
 	</script>
 </html>
