@@ -16,7 +16,8 @@
 		/*background-color: blue; */
 		position: absolute;
 		z-index: 1;
-		top: 300px;
+		top: 236px;
+		background-color: #FAFAFA
 	}
 	.movie-information-title{
 		position: fixed;
@@ -40,7 +41,7 @@
 	}
 	.movie-information-photo img{
 		width: 100%;
-		height: 250px;
+		height: 180px;
 		background-size: cover;
 	}
 	.movie{
@@ -48,35 +49,83 @@
 		height: 100%;
 		position: relative;
 	}
-	.movie-information-introduction{
-		background-color: white;
+	.movie-overview{
+		margin-top: 5px;
+		margin-left: 10px;
+		margin-right: 10px;
+		height: 31px;
+		line-height: 31px;
+		background-color: #F0F0F0;
+		border-radius: 4px;
+		padding: 0 10px;
+	}
+	.movie-information-introduction{}
+	.movie-score{
+		height: auto;
+		width: auto;
+		margin-left: 15px;
+		margin-top: 5px;
+	}
+	.movie-introduce{
+		height: auto;
+		width: auto;
+		margin-left: 15px;
+		margin-top: 5px;
+	}
+	.movie-introduce li{
+		margin-top: 5px;
+	}
+	.movie-cast{
+		height: auto;
+		width: auto;
+		margin-left: 15px;
+		margin-top: 5px;
+		margin-right: 15px;
+	}
+	.movie-cast li{
+		margin-top: 5px;
+	}
+	.movie-cast-title{
+		height: auto;
+		width: 40px;
+	}
+	.movie-cast-details{
+		height: auto;
+		margin-left: 36px;
+		/*overflow:hidden;
+		text-overflow:ellipsis;
+		-o-text-overflow:ellipsis;
+		white-space:nowrap;*/
 	}
 	</style>
 <body>
 <div class="movie">
-	<div class="movie-information-title">电影</div>
+	<div class="movie-information-title"><%= movieDetail.name %></div>
 	<div class="movie-information-photo">
 		<img src="<%= movieDetail.img %>">
 	</div>
 	<div class="movie-information">
+		<div class="movie-overview">概览</div>
 		<div class="movie-information-introduction">
-			<div>
-			<%= movieDetail.name %>
-		</div>
-		<div>
+			<div class="movie-score">
+		     评分：
 			<%= movieDetail.star %>
 		</div>
-		<div>
+		<div class="movie-introduce">
 			<ul>
 				<% for(var key in movieDetail.detail) {%>
-					<li><%= key %>:<%= movieDetail.detail[key] %></li>
+					<li><%=key%>:  <%= movieDetail.detail[key] %></li>
 				<% } %>
 			</ul>
 		</div>
-		<div>
+		<div class="movie-cast">
 			<ul>
 				<% for(var key in movieDetail.cast) {%>
-					<li><%= key %>:<%= movieDetail.cast[key] %></li>
+					<li><div class="movie-cast-title"><%=key%></div>
+					<div class="movie-cast-details">
+						<%= movieDetail.cast[key] %>
+					</div>
+					</li>
 				<% } %>
 			</ul>
 		</div>
