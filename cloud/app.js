@@ -376,6 +376,222 @@ function getCUITImportentDataByAV(){
  	});
  }
 
+ function getMoviesFromMYData(){
+	 AV.Cloud.httpRequest({
+ 	  url: 'http://m.maoyan.com/movie/list.json?type=hot&offset=0&limit=1000',
+ 		headers: {
+ 	  },
+ 	  success: function(httpResponse) {
+ 			console.log("success");
+ 		// 	console.log(httpResponse.text);
+			var MYData = eval("MYData="+httpResponse.text);
+			console.log(MYData);
+ 	  },
+ 	  error: function(httpResponse) {
+ 	    console.error('Request failed with response code ' + httpResponse.status);
+ 	  }
+ 	});
+ }
+
+ // getMoviesFromMYData();
+
+/**********************从比价网上面爬取到的数据********************************************/
+/*********************************爬取价格**********************************/
+ function getPriceFromBJData(movie,cinema,date){
+ 	AV.Cloud.httpRequest({
+ // 	 url: 'http://www.xuerendianying.com/bijia_api/fs/filmsessionlist/?movie=326929&cinema=4838&date=2016-03-25',
+ 	 url: 'http://www.xuerendianying.com/bijia_api/fs/filmsessionlist/?movie='+movie+'&cinema='+cinema+'&date='+date,
+ 	 headers: {
+ 	 },
+ 	 success: function(httpResponse) {
+ 		 console.log("success");
+		//  	console.log(httpResponse.text);
+ 		 var BJData = eval("BJData="+httpResponse.text);
+		 var priceData = {};
+ 	// 	 console.log(BJData);
+		 var minData = BJData.filmsession_list[0];
+		 priceData.name = BJData.movie.title;
+		 var minPrice = BJData.filmsession_list[0]['min_price'];
+		 for(var i = 0; i < BJData.filmsession_list.length;i++){
+			 if(minPrice > BJData.filmsession_list[i]['min_price']){
+				 minPrice = BJData.filmsession_list[i]['min_price'];
+				 minData = BJData.filmsession_list[i];
+			 }
+		 }
+		 priceData.price = minPrice;
+		 priceData.showtime = minData.showtime;
+		 console.log(minData);
+		 var nameList = {};
+		 for(var i = 0; i < minData.channel_list.length; i++){
+			 var name = minData.channel_list[i].name;
+			 var price = minData.channel_list[i].price;
+			 if(price == minPrice){
+				 nameList[i] = minData.channel_list[i].name;
+				 console.log(minData.channel_list[i].name);
+			 }
+		 }
+		 priceData.nameList = nameList;
+		 console.log(priceData);
+ 	 },
+ 	 error: function(httpResponse) {
+ 		 console.error('Request failed with response code ' + httpResponse.status);
+ 	 }
+  });
+ }
+ getPriceFromBJData('326929','4838','2016-03-25');
+ /*********************************爬取正在上映的电影**********************************/
+  function getMoviePage1FromBJData(){
+  	AV.Cloud.httpRequest({
+  	 url: 'http://www.xuerendianying.com/bijia_api/fs/movielist/?cityid=880&page=1',
+  	 headers: {
+  	 },
+  	 success: function(httpResponse) {
+  		 console.log("success");
+ 		//  	console.log(httpResponse.text);
+  		 var BJData = eval("BJData="+httpResponse.text);
+  		 console.log(BJData);
+  	 },
+  	 error: function(httpResponse) {
+  		 console.error('Request failed with response code ' + httpResponse.status);
+  	 }
+   });
+  }
+	function getMoviePage2FromBJData(){
+  	AV.Cloud.httpRequest({
+  	 url: 'http://www.xuerendianying.com/bijia_api/fs/movielist/?cityid=880&page=2',
+  	 headers: {
+  	 },
+  	 success: function(httpResponse) {
+  		 console.log("success");
+ 		//  	console.log(httpResponse.text);
+  		 var BJData = eval("BJData="+httpResponse.text);
+  		 console.log(BJData);
+  	 },
+  	 error: function(httpResponse) {
+  		 console.error('Request failed with response code ' + httpResponse.status);
+  	 }
+   });
+  }
+	function getMoviePage3FromBJData(){
+  	AV.Cloud.httpRequest({
+  	 url: 'http://www.xuerendianying.com/bijia_api/fs/movielist/?cityid=880&page=3',
+  	 headers: {
+  	 },
+  	 success: function(httpResponse) {
+  		 console.log("success");
+ 		//  	console.log(httpResponse.text);
+  		 var BJData = eval("BJData="+httpResponse.text);
+  		 console.log(BJData);
+  	 },
+  	 error: function(httpResponse) {
+  		 console.error('Request failed with response code ' + httpResponse.status);
+  	 }
+   });
+  }
+	/*********************************爬取所在城市**********************************/
+   function getMovieAddFromBJData(){
+   	AV.Cloud.httpRequest({
+   	 url: 'http://www.xuerendianying.com/bijia_api/fs/cinemalist/?cityid=880&lon=103.991905&lat=30.586432',
+   	 headers: {
+   	 },
+   	 success: function(httpResponse) {
+   		 console.log("success");
+  		//  	console.log(httpResponse.text);
+   		 var BJData = eval("BJData="+httpResponse.text);
+   		 console.log(BJData);
+   	 },
+   	 error: function(httpResponse) {
+   		 console.error('Request failed with response code ' + httpResponse.status);
+   	 }
+    });
+   }
+
+// getPriceFromBJData();
+
+ // function getMYPriceData(myid,type,callback){
+ //  var cinemaid = 7990;
+ //  AV.Cloud.httpRequest({
+ // 	  url: 'http://m.maoyan.com/showtime/wrap.json?cinemaid='+cinemaid+'&movieid='+myid,
+ // 	success: function(httpResponse) {
+ // 		console.log(httpResponse.text);
+ // 	},
+ // 	error: function(error){
+ // 	}
+ // 	})
+ // }
+ function getMYPriceData(myid){
+	 var cinemaid = 7990;
+	 AV.Cloud.httpRequest({
+		method: 'GET',
+ 	  url: 'http://m.maoyan.com/showtime/wrap.json?cinemaid='+cinemaid+'&movieid='+myid,
+ 		headers: {
+			'Host':'m.maoyan.com',
+			'Referer':'http://m.maoyan.com/',
+			'Content-Type':'text/html;charset=UTF-8',
+			'X-Requested-With':'XMLHttpRequest',
+			'Connection':'keep-alive',
+			'User-Agent':'Mozilla/5.0 (iPhone; CPU iPhone OS 9_1 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13B143 Safari/601.1'
+ 	  },
+ 	 //  url:'http://api.meituan.com/show/v2/movies/shows.json?cinema_id='+cinemaid+'&channelId=1&business=1&clientType=android&__vhost=api.maoyan.com&utm_campaign=AmovieBmovieCD-1&movieBundleVersion=6601&utm_source=wandoujia&utm_medium=android&utm_term=6.6.0&utm_content=353347060150990&ci=59&net=255&dModel=XT1085&uuid=3382AC16F9DBDFA2285776CED95D3664C0F4D219999032F262F4FC885EF4A6AE&lat=30.580526&lng=103.984982&__skck=6a375bce8c66a0dc293860dfa83833ef&__skts=1458710896843&__skua=7e01cf8dd30a179800a7a93979b430b2&__skno=fd95f55a-6a25-4094-a1d0-9cbfee42dde8&__skcy=1aIZuZAPR7Dks4bOy0OTk91yucA%3D',
+	//  headers: {
+	// 	 'User-Agent':'AiMovie /motorola-6.0.1-cm_victara_retcn-1776x1080-480-6.6.0-6601-353347060150990-wandoujia',
+	// 	 'Host':'api.meituan.com',
+	// 	 'Accept-Encoding': 'gzip',
+	// 	 'key':'52628410',
+	// 	 'Date':'Wed Mar 23 2016 05:36:27 GMT',
+	// 	 'Authorization': 'cb393eb37cc15ae5ec7ffd20fffdae33',
+	// 	 '__skua': '7e01cf8dd30a179800a7a93979b430b2',
+	// 		'__skts': '1458711387926',
+	// 		'__skck': '6a375bce8c66a0dc293860dfa83833ef',
+	// 		'__skcy': 'ZaFkfczbEEnKsH2qTF85W/9GduQ=',
+	// 		'__skno': 'c9c949c1-d02f-48df-b407-a9bc3a789971',
+	// 	 'Accept-Charset': 'utf-8',
+	// 	 'Connection': 'Keep-Alive'
+	//  },
+ 	  success: function(httpResponse) {
+ 			console.log("success");
+ 		// 	console.log(httpResponse.text);
+			var MYData = eval("MYData="+httpResponse.text);
+			console.log(MYData.data.DateShow);
+ 	  },
+ 	  error: function(httpResponse) {
+ 	    console.error('Request failed with response code ' + httpResponse.status);
+ 	  }
+ 	});
+ }
+// getMYPriceData(247220);
+
+
+function getTBPriceData(callback){
+	var cinemaid = 7990;
+	AV.Cloud.httpRequest({
+	 method: 'GET',
+	 url: 'http://api.m.taobao.com/h5/mtop.film.mtopcinemaapi.getcinema/5.4/?v=5.4&api=mtop.film.MtopCinemaAPI.getCinema&appKey=12574478&t=1458749725407&callback=mtopjsonp1&type=jsonp&sign=ec846d287f97d533f0ec377a27d28a71&data=%7B%22platform%22%3A%228%22%2C%22asac%22%3A%22D679AU6J95PHQT67G0B5%22%2C%22cinemaId%22%3A%2218978%22%7D',
+	 // url:'http://h5.m.taobao.com/app/movie/pages/index/show-list.html?_=_&from=def&sqm=a1z2r.7661912.1.1&cinemaid=18978&cinemaname=%E6%88%90%E9%83%BD%E8%80%80%E8%8E%B1%E6%88%90%E9%BE%99%E5%9B%BD%E9%99%85%E5%BD%B1%E5%9F%8E&spm=a1z2r.7661912.h5_movie_index.10',
+	 headers: {
+		 'User-Agent':'Mozilla/5.0 (iPhone; CPU iPhone OS 9_1 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13B143 Safari/601.1',
+		 'Cookie':'cna=1aV2Drs7QE8CAd4Sfzas2Iw8; v=0; cookie2=1c63f24d36b4f682442da82104824b89; t=2c8f328a46538d455cd07e86425fef67; _m_h5_tk=ceb6fcd77c11f2b1dffcf8c495ffe3ff_1458753907787; _m_h5_tk_enc=46c05b8b7e707d3f74a101ca659c595d; isg=39312BA330D24BACB637C34D391FB934; l=Aj4-R2jwjyAhSmbNGLcMAxIEDk-AYQL5',
+		 'Host':'api.m.taobao.com',
+		 'Referer':'http://h5.m.taobao.com/app/movie/pages/index/show-list.html?_=_&from=def&sqm=a1z2r.7661912.1.1&cinemaid=18978&cinemaname=%E6%88%90%E9%83%BD%E8%80%80%E8%8E%B1%E6%88%90%E9%BE%99%E5%9B%BD%E9%99%85%E5%BD%B1%E5%9F%8E&spm=a1z2r.7661912.h5_movie_index.9'
+	 },
+	 success: function(httpResponse) {
+		 console.log("success");
+		//  var TBData = eval('('+httpResponse.text+')');
+		var TBData = httpResponse.text.split("mtopjsonp1(")[1];
+		TBData = TBData.substring(0,TBData.length-1);
+		TBData = eval("TBData="+TBData);
+		 console.log(TBData.data.returnValue.shows);
+		 /*******************这里的价格是3600 = 36****************************/
+		 callback.success(TBData.data.returnValue.shows);
+	 },
+	 error: function(httpResponse) {
+		 console.error('Request failed with response code ' + httpResponse.status);
+	 }
+ });
+}
+// getTBPriceData();
+
+
  function getMovieIngData(mid,type,callback){
 	//  getUrlData("http://m.dianying.baidu.com/info/cinema/detail?cinemaId=3185&sfrom=newnuomi&from=webapp&sub_channel=nuomi_wap_rukou5&source=nuomi&c=75&cc=&kehuduan=","UTF-8",{
 	// 	 success:function(result){
