@@ -31,7 +31,7 @@ var nodemailer = require("nodemailer");
 **保存公告数据
 ** data:一个保存了表单信息的json。find：需要查找是否存在相同的元素。callback：回调函数；成功返回“success”，失败返回“error”；
  */
-function saveMoviesData(data,find,callback){
+function saveMoviesData(data,find,type,callback){
 	var post = AV.Object.new('Movies');
 	console.log(data);
 	var query = new AV.Query('Movies');
@@ -54,12 +54,53 @@ function saveMoviesData(data,find,callback){
 			  console.log('Failed to create new object, with error message: ' + err.message);
 				callback.error(err);
 			});
+		}else{
+			if(type == 'BJ'){
+				console.log(results[0].id);
+				query.get(results[0].id).then(function(post) {
+					// 成功，回调中可以取得这个 Post 对象的一个实例，然后就可以修改它了
+					for(var key in data){
+						post.set(key, data[key]);
+					}
+					post.save().then(function(post) {
+					  // 成功保存之后，执行其他逻辑.
+					  console.log('New object created with objectId: ' + post.id);
+						callback.success("success");
+					}, function(err) {
+					  // 失败之后执行其他逻辑
+					  // error 是 AV.Error 的实例，包含有错误码和描述信息.
+					  console.log('Failed to create new object, with error message: ' + err.message);
+						callback.error(err);
+					});
+				}, function(error) {
+					// 失败了
+					console.log(error);
+				});
+			}
 		}
+
+
+			// if(type == 'BJ'){
+			// 	for(var key in data){
+			// 		post.set(key, data[key]);
+			// 	}
+			// 	post.save().then(function(post) {
+			// 	  // 成功保存之后，执行其他逻辑.
+			// 	  console.log('New object created with objectId: ' + post.id);
+			// 		callback.success("success");
+			// 	}, function(err) {
+			// 	  // 失败之后执行其他逻辑
+			// 	  // error 是 AV.Error 的实例，包含有错误码和描述信息.
+			// 	  console.log('Failed to create new object, with error message: ' + err.message);
+			// 		callback.error(err);
+			// 	});
+			// }
 	}, function(error) {
 	  console.log('Error: ' + error.code + ' ' + error.message);
 	});
 }
-
+// saveMoviesData({'name':'破风'},'name');
+// return 0;
 	/*
 	**查询公告数据
 	**
@@ -139,144 +180,6 @@ function getUrlData(url,charset,callback){
 	});
 }
 
-function getJWCImportentData(){
-	getUrlData("http://www1.cuit.edu.cn/NewsList.asp?bm=32&type=448","GBK",{
-		success:function(result){
-			$ = cheerio.load(result);
-			var time = '';
-			var title = '';
-			var url = '';
-			var type = 'JWC';
-			$(".newstext table td a").each(function(i, elem){
-				if($(this).text()){
-					if(i%2){
-						//这里显示的是时间
-						time = $(this).text();
-						var data = {};
-						data.time = time;
-						data.title = title;
-						data.url = url;
-						data.type = type;
-						saveAnnounceData(data,"title",{
-							success:function(result){
-								// console.log(result);
-							},
-							error:function(error){
-								console.log(error)
-							}
-						});
-
-					}else{
-						//这里显示的是标题
-						title = $(this).text();
-						url = $(this).attr("href");
-					}
-				}
-			})
-		},
-		error:function(error){
-			console.log(error)
-		}
-	});
-}
-function getCUITImportentData(){
-	console.log("测试");
-	getUrlData("http://www.cuit.edu.cn/NewsList?id=2","UTF-8",{
-		success:function(result){
-			$ = cheerio.load(result);
-			console.log(result);
-			$("#NewsListContent li").each(function(i, elem){
-				if($(this).text()){
-						console.log($(this).children("a").text());
-						var title = $(this).children("a").text();
-						var url = "http://www.cuit.edu.cn/"+$(this).children("a").attr("href");
-						var time = $(this).children(".datetime").text();
-						var type = 'CUIT';
-						time = time.replace("[","");
-						time = time.replace("]","");
-						var data = {};
-						data.time = time;
-						data.title = title;
-						data.url = url;
-						data.type = type;
-						console.log(data);
-						saveAnnounceData(data,"title",{
-							success:function(result){
-								console.log(result);
-							},
-							error:function(error){
-								console.log(error)
-							}
-						});
-				}
-			})
-		},
-		error:function(error){
-			console.log(error)
-		}
-	});
-}
-
-/*
-**定时执行爬取学校公告信息
-**
- */
- exports.cronGetData = function(){
-	getCUITImportentData();
- 	getJWCImportentData();
- }
-function getCUITImportentDataByAV(){
-	console.log("ok");
-	AV.Cloud.httpRequest({
-	  url: 'http://www.cuit.edu.cn/NewsList?id=2',
-		headers: {
-	    'Host':'www.cuit.edu.cn'
-	  },
-	  success: function(httpResponse) {
-			console.log("success");
-			console.log(httpResponse.text);
-			$ = cheerio.load(httpResponse.text);
-			$("#NewsListContent li").each(function(i, elem){
-				if($(this).text()){
-						console.log($(this).children("a").text());
-						var title = $(this).children("a").text();
-						var url = "http://www.cuit.edu.cn/"+$(this).children("a").attr("href");
-						var time = $(this).children(".datetime").text();
-						var type = 'CUIT';
-						time = time.replace("[","");
-						time = time.replace("]","");
-						var data = {};
-						data.time = time;
-						data.title = title;
-						data.url = url;
-						data.type = type;
-						console.log(data);
-						saveAnnounceData(data,"title",{
-							success:function(result){
-								console.log(result);
-							},
-							error:function(error){
-								console.log(error)
-							}
-						});
-				}
-			})
-	  },
-	  error: function(httpResponse) {
-	    console.error('Request failed with response code ' + httpResponse.status);
-	  }
-	});
- }
- // getCUITImportentDataByAV();
- exports.getCUITImportentData = function(){
-	 getCUITImportentDataByAV();
- }
- exports.getJWCImportentData = function(){
-	getJWCImportentData();
- }
-
-// getJWCImportentData();
-// getCUITImportentDataByAV();
 
 //初始化并设置定时任务的时间
 // var rule = new schedule.RecurrenceRule();
@@ -332,14 +235,13 @@ function getCUITImportentDataByAV(){
 				data.img = img;
 				data.star = star;
 				data.type = 'showing';
-				saveMoviesData(data,"name",{
+				saveMoviesData(data,"name","",{
 					success:function(result){
 					},
 					error:function(error){
 						console.log(error)
 					}
 				});
-				// getPriceFromNM(mid);
  			})
 			console.log("即将上映");
 			$("#upcoming-movies-j .j-sliders .item").each(function(i, elem){
@@ -359,7 +261,7 @@ function getCUITImportentDataByAV(){
 				data.star = star;
 				data.releaseDate = releaseDate;
 				data.type = 'upcoming';
-				saveMoviesData(data,"name",{
+				saveMoviesData(data,"name","",{
 					success:function(result){
 						// console.log(result);
 					},
@@ -438,7 +340,7 @@ function getCUITImportentDataByAV(){
  	 }
   });
  }
- getPriceFromBJData('326929','4838','2016-03-25');
+ // getPriceFromBJData('326929','4838','2016-03-25');
  /*********************************爬取正在上映的电影**********************************/
   function getMoviePage1FromBJData(){
   	AV.Cloud.httpRequest({
@@ -447,15 +349,33 @@ function getCUITImportentDataByAV(){
   	 },
   	 success: function(httpResponse) {
   		 console.log("success");
- 		//  	console.log(httpResponse.text);
+ 		 	console.log(httpResponse.text);
   		 var BJData = eval("BJData="+httpResponse.text);
   		 console.log(BJData);
+			 for(var i = 0; i < BJData.results.length;i++){
+				 var data = {};
+				 data.bid = BJData.results[i].id;
+				 data.name = BJData.results[i].title;
+				 data.poster = BJData.results[i].poster;
+				 data.poster_big = BJData.results[i].poster_big;
+				 data.vertical_poster = BJData.results[i].vertical_poster;
+				 data.type = 'showing';
+				 saveMoviesData(data,"name","BJ",{
+					 success:function(result){
+					 },
+					 error:function(error){
+						 console.log(error)
+					 }
+				 });
+			 }
   	 },
   	 error: function(httpResponse) {
   		 console.error('Request failed with response code ' + httpResponse.status);
   	 }
    });
   }
+	// getMoviePage1FromBJData();
+
 	function getMoviePage2FromBJData(){
   	AV.Cloud.httpRequest({
   	 url: 'http://www.xuerendianying.com/bijia_api/fs/movielist/?cityid=880&page=2',
@@ -466,6 +386,22 @@ function getCUITImportentDataByAV(){
  		//  	console.log(httpResponse.text);
   		 var BJData = eval("BJData="+httpResponse.text);
   		 console.log(BJData);
+			 for(var i = 0; i < BJData.results.length;i++){
+				 var data = {};
+				 data.bid = BJData.results[i].id;
+				 data.name = BJData.results[i].title;
+				 data.poster = BJData.results[i].poster;
+				 data.poster_big = BJData.results[i].poster_big;
+				 data.vertical_poster = BJData.results[i].vertical_poster;
+				 data.type = 'showing';
+				 saveMoviesData(data,"name","BJ",{
+					 success:function(result){
+					 },
+					 error:function(error){
+						 console.log(error)
+					 }
+				 });
+			 }
   	 },
   	 error: function(httpResponse) {
   		 console.error('Request failed with response code ' + httpResponse.status);
@@ -482,6 +418,22 @@ function getCUITImportentDataByAV(){
  		//  	console.log(httpResponse.text);
   		 var BJData = eval("BJData="+httpResponse.text);
   		 console.log(BJData);
+			 for(var i = 0; i < BJData.results.length;i++){
+				 var data = {};
+				 data.bid = BJData.results[i].id;
+				 data.name = BJData.results[i].title;
+				 data.poster = BJData.results[i].poster;
+				 data.poster_big = BJData.results[i].poster_big;
+				 data.vertical_poster = BJData.results[i].vertical_poster;
+				 data.type = 'showing';
+				 saveMoviesData(data,"name","BJ",{
+					 success:function(result){
+					 },
+					 error:function(error){
+						 console.log(error)
+					 }
+				 });
+			 }
   	 },
   	 error: function(httpResponse) {
   		 console.error('Request failed with response code ' + httpResponse.status);
@@ -784,19 +736,49 @@ function sendEmail(to,movie,platform){
 	});
 }
 
+// getMoviesData();
+function getBJMovies(){
+	getMoviePage1FromBJData();
+	getMoviePage2FromBJData();
+	getMoviePage3FromBJData();
+}
+// getBJMovies();
+//清空movies里的所有数据
+function moviesDelete(){
+	var query = new AV.Query('Movies');
+	query.destroyAll(result).then(function() {
+	  // 删除成功
+	  console.log(result);
+	}, function() {
+	  // 失败
+	});
+}
+// moviesDelete();
+
+//初始化并设置定时任务的时间
+ var rule = new schedule.RecurrenceRule();
+ rule.hour =0;rule.minute =0;rule.second =0;
+
+//处理要做的事情
+	var j = schedule.scheduleJob(rule, function(){
+	    // console.log('我在这里处理了某些事情...');
+	    moviesDelete();
+	});
+
 
 // getMovieDetailFromNM("9932");
 app.get('/announce', function(req, res) {
-		var query = new AV.Query('Announce');
-		query.addDescending('time');
-		query.find().then(function(results) {
-			// 处理返回的结果数据
-			console.log(results);
-			res.render('announce', {results:results});
-		}, function(error) {
-			console.log('Error: ' + error.code + ' ' + error.message);
-			res.render('announce', {results:error});
-		});
+		// var query = new AV.Query('Announce');
+		// query.addDescending('time');
+		// query.find().then(function(results) {
+		// 	// 处理返回的结果数据
+		// 	console.log(results);
+		// 	res.render('announce', {results:results});
+		// }, function(error) {
+		// 	console.log('Error: ' + error.code + ' ' + error.message);
+		// 	res.render('announce', {results:error});
+		// });
+
 });
 
 app.get('/detail/:id', function(req, res) {
@@ -850,6 +832,7 @@ app.get('/test', function(req, res) {
 
 app.get('/movie', function(req, res) {
 	var query = new AV.Query('Movies');
+	query.notEqualTo('mid', null);
 	query.addDescending('star');
 	query.find().then(function(results) {
 		// 处理返回的结果数据
