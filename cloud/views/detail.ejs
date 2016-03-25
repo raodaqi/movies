@@ -97,17 +97,17 @@
 		width: 40px;
 	}
 	.movie-cast-details{
-		height: 40px;
+		height: 45px;
 		margin-left: 36px;
 		overflow:hidden;
-		text-overflow:ellipsis;
-		/*-o-text-overflow:ellipsis;*/
-		white-space:nowrap;
 	}
 	.return{
 		float: left;
 		margin-left: 13px;
 		font-size: 15px;
+	}
+	.add-height{
+		height: auto;
 	}
 	</style>
 <body>
@@ -127,9 +127,13 @@
 				<ul>
 					<% for(var key in movieDetail.detail) {%>
 					<li>
+						<div class="movie-cast-title">
 						<%=key%>
-						:
-						<%= movieDetail.detail[key] %></li>
+						:</div>
+						<div class="movie-cast-details">
+						<%= movieDetail.detail[key] %>
+						</div>
+						</li>
 					<% } %></ul>
 			</div>
 			<div class="movie-cast">
@@ -173,6 +177,9 @@
 		})
 		$(".return-MainPage").click(function(){
 			history.go(-1);
+		})
+		$(".movie-cast-details").click(function(){
+			$(this).addClass("add-height");
 		})
 	</script>
 </html>
