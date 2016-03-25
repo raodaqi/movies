@@ -26,11 +26,18 @@
 		height: 50px;
 		background-color: white;
 		line-height:50px;
-		text-align: center;
-		font-size: 18px;
+		/*text-align: center;*/
+		font-size: 22px;
 		border-bottom: 1px solid #EAEAEA;
 		z-index: 9999;
 		/*display: none;*/
+	}
+	.title-name{
+		float: left;
+		font-size: 22px;
+		height: 50px;
+		line-height: 50px;
+		margin-left: 14px;
 	}
 	.movie-information-photo {
 		width: 100%;
@@ -97,43 +104,49 @@
 		-o-text-overflow:ellipsis;
 		white-space:nowrap;*/
 	}
+	.return{
+		float: left;
+		margin-left: 13px;
+		font-size: 15px;
+	}
 	</style>
 <body>
 <div class="movie">
-	<div class="movie-information-title"><%= movieDetail.name %></div>
+	<div class="movie-information-title">
+	<a class="return-MainPage"><div class="iconfont icon-fanhui return"></div></a>
+	<div class="title-name"><%= movieDetail.name %></div></div>
 	<div class="movie-information-photo">
-		<img src="<%= movieDetail.img %>">
-	</div>
+		<img src="<%= movieDetail.img %>"></div>
 	<div class="movie-information">
 		<div class="movie-overview">概览</div>
 		<div class="movie-information-introduction">
 			<div class="movie-score">
-		     评分：
-			<%= movieDetail.star %>
-		</div>
-		<div class="movie-introduce">
-			<ul>
-				<% for(var key in movieDetail.detail) {%>
-					<li><%=key%>:  <%= movieDetail.detail[key] %></li>
-				<% } %>
-			</ul>
-		</div>
-		<div class="movie-cast">
-			<ul>
-				<% for(var key in movieDetail.cast) {%>
-					<li><div class="movie-cast-title"><%=key%></div>
-					<div class="movie-cast-details">
-						<%= movieDetail.cast[key] %>
-					</div>
+				评分：
+				<%= movieDetail.star %></div>
+			<div class="movie-introduce">
+				<ul>
+					<% for(var key in movieDetail.detail) {%>
+					<li>
+						<%=key%>
+						:
+						<%= movieDetail.detail[key] %></li>
+					<% } %></ul>
+			</div>
+			<div class="movie-cast">
+				<ul>
+					<% for(var key in movieDetail.cast) {%>
+					<li>
+						<div class="movie-cast-title">
+							<%=key%></div>
+						<div class="movie-cast-details">
+							<%= movieDetail.cast[key] %></div>
 					</li>
-				<% } %>
-			</ul>
-		</div>
+					<% } %></ul>
+			</div>
 		</div>
 	</div>
 </div>
 <% include footer.ejs %>
-<script type="text/javascript">
 <script type="text/javascript">
 		var data = {
 			id : "<%= id %>"
@@ -157,6 +170,9 @@
 			},
 			error: function(error){
 			}
+		})
+		$(".return-MainPage").click(function(){
+			window.location.href = "/movie";
 		})
 	</script>
 </html>
