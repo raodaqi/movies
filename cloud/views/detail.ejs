@@ -97,12 +97,12 @@
 		width: 40px;
 	}
 	.movie-cast-details{
-		height: auto;
+		height: 40px;
 		margin-left: 36px;
-		/*overflow:hidden;
+		overflow:hidden;
 		text-overflow:ellipsis;
-		-o-text-overflow:ellipsis;
-		white-space:nowrap;*/
+		/*-o-text-overflow:ellipsis;*/
+		white-space:nowrap;
 	}
 	.return{
 		float: left;
@@ -172,7 +172,7 @@
 			}
 		})
 		$(".return-MainPage").click(function(){
-			window.location.href = "/movie";
+			history.go(-1);
 		})
 	</script>
 </html>
