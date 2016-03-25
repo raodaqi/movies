@@ -763,8 +763,18 @@ function moviesDelete(){
 	var j = schedule.scheduleJob(rule, function(){
 	    // console.log('我在这里处理了某些事情...');
 	    moviesDelete();
+			getMoviesData();
+			// getBJMovies();
 	});
 
+	var rule2 = new schedule.RecurrenceRule();
+	rule2.hour =0;rule2.minute =0;rule2.second =2;
+
+	//处理要做的事情
+	 var k = schedule.scheduleJob(rule2, function(){
+			 // console.log('我在这里处理了某些事情...');
+			 getBJMovies();
+	 });
 
 // getMovieDetailFromNM("9932");
 app.get('/announce', function(req, res) {
@@ -784,28 +794,37 @@ app.get('/announce', function(req, res) {
 app.get('/detail/:id', function(req, res) {
 	var id = req.params.id;
 	console.log(id);
-	if(id){
-		// getMovieIngData(id,"",{
-		// 	success:function(price){
-		// 		console.log(price);
-				getMovieDetailFromNM(id,{
-					success:function(movieDetail){
-						// console.log(result);
-						res.render('detail', {movieDetail:movieDetail,id:id});
-					},
-					error:function(error){
-						console.log(error);
-						res.render('detail', {movieDetail:''});
-					}
-				})
-		// 	},
-		// 	error:function(error){
-		// 		console.log(error);
-		// 	}
-		// })
-	}else{
-		res.render('detail', {movieDetail:""});
-	}
+	var query = new AV.Query('Movies');
+	query.equalTo('mid', id);
+	query.first().then(function(results) {
+		var poster = '';
+		if(results.attributes.poster){
+			poster = results.attributes.poster;
+		}else{
+			poster = results.attributes.img;
+		}
+		console.log(poster);
+		if(id){
+			// getMovieIngData(id,"",{
+			// 	success:function(price){
+			// 		console.log(price);
+					getMovieDetailFromNM(id,{
+						success:function(movieDetail){
+							// console.log(result);
+							res.render('detail', {movieDetail:movieDetail,id:id,poster:poster});
+						},
+						error:function(error){
+							console.log(error);
+							res.render('detail', {movieDetail:'',id:'',poster:''});
+						}
+					})
+		}else{
+			res.render('detail', {movieDetail:"",id:'',poster:''});
+		}
+	}, function(error) {
+	  console.log('Error: ' + error.code + ' ' + error.message);
+	});
+
 });
 app.post('/price', function(req, res) {
 	var id = req.body.id;
