@@ -156,8 +156,8 @@
 	 //        });
 		// })
 		//
-		var test = navigator;
-		console.log(test);
+		// var test = navigator;
+		// console.log(test);
 
 		var data ={
 	        'name':'疯狂动物城',
@@ -174,9 +174,12 @@
 	            // }else{
 	            //   alert(result.message);
 	            // }
+	            console.log("收藏成功");
 	          },
 	          error: function(error){
-	            alert(error);
+	            // alert(error);
+	            console.log("error");
+	            window.location.href="/signin";
 	          }
 	        });
 	</script>

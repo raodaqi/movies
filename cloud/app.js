@@ -307,7 +307,7 @@ function getUrlData(url,charset,callback){
  	 },
  	 success: function(httpResponse) {
  		 console.log("success");
-		//  	console.log(httpResponse.text);
+		 console.log(httpResponse.text);
  		 var BJData = eval("BJData="+httpResponse.text);
 		 var priceData = {};
  	// 	 console.log(BJData);
@@ -340,7 +340,7 @@ function getUrlData(url,charset,callback){
  	 }
   });
  }
- // getPriceFromBJData('326929','4838','2016-03-25');
+ // getPriceFromBJData('326929','4838','2016-03-28');
  /*********************************爬取正在上映的电影**********************************/
   function getMoviePage1FromBJData(){
   	AV.Cloud.httpRequest({
@@ -457,6 +457,13 @@ function getUrlData(url,charset,callback){
    	 }
     });
    }
+
+
+   /************************************通知*****************************************************/
+   function sendLowPriceEmail(){
+
+   }
+
 
 // getPriceFromBJData();
 
@@ -913,11 +920,11 @@ app.post('/attention', function(req, res) {
 	var name = req.body.name;
 	var price = req.body.price;
 	var currentUser = AV.User.current();
-	var email = currentUser.attributes.email;
 	var post = AV.Object.new('Attention');
 	
 	// return;
 	if(currentUser){
+		var email = currentUser.attributes.email;
 		console.log(currentUser.attributes.email);
 		// post.set("name", name);
 		// post.set("price", price);
@@ -935,10 +942,12 @@ app.post('/attention', function(req, res) {
 				post.set("email", email);
 				post.save().then(function(post) {
 				  // 成功保存之后，执行其他逻辑.
+				  res.send(post);
 				  console.log('New object created with objectId: ' + post.id);
 				}, function(err) {
 				  // 失败之后执行其他逻辑
 				  // error 是 AV.Error 的实例，包含有错误码和描述信息.
+				  res.send(err);
 				  console.log('Failed to create new object, with error message: ' + err.message);
 				});
 			}else {
@@ -949,20 +958,26 @@ app.post('/attention', function(req, res) {
 					post.set("email", email);
 			        post.save().then(function(post) {
 			            // 成功保存之后，执行其他逻辑.
+			            res.send(post);
 			            console.log('New object created with objectId: ' + post.id);
 				    }, function(err) {
 				            // 失败之后执行其他逻辑
 				            // error 是 AV.Error 的实例，包含有错误码和描述信息.
+				        res.send(err);
 				        console.log('Failed to create new object, with error message: ' + err.message);
 				    });
 			    }, function(error) {
 			        // 失败了
+			        res.send(error);
 			        console.log(error);
 			    });
 			}
 		}, function(error) {
+		  res.send(error);
 		  console.log('Error: ' + error.code + ' ' + error.message);
 		});
+	}else{
+		res.send("{message:'用户没有登陆',code:'401'}");
 	}
 	// post.set("name", name);
 	// post.set("price", price);
