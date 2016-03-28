@@ -134,7 +134,7 @@
 		<a class="return-MainPage">
 			<div class="iconfont icon-fanhui return"></div>
 		</a>
-		<div class="title-name">
+		<div class="title-name" data-name="<%= movieDetail.name %>">
 			<%= movieDetail.name %></div>
 			<a class="title-caidan">
 				<div class="iconfont icon-shoucang save"></div>
@@ -232,7 +232,26 @@
 			$('.ui-actionsheet').removeClass('show');
 			var prices = $(this).attr("data-price");
 			console.log(prices);
-			alert(prices);
-		})
+			var names = $(".title-name").attr("data-name");
+			console.log(names);
+		var data ={
+	        'name':'names',
+	        'price':'prices'
+	      }
+	        $.ajax({
+	          type : "POST",
+	          data: data,
+	          dataType: "json",
+	          url : "/attention",
+	          success : function(result){
+	            console.log("收藏成功");
+	          },
+	          error: function(error){
+	            // alert(error);
+	            console.log("error");
+	            window.location.href="/signin";
+	          }
+	        });
+	        })
 	</script>
 </html>
