@@ -299,7 +299,7 @@ function getUrlData(url,charset,callback){
 
 /**********************从比价网上面爬取到的数据********************************************/
 /*********************************爬取价格**********************************/
- function getPriceFromBJData(movie,cinema,date){
+ function getPriceFromBJData(movie,cinema,date,callback){
  	AV.Cloud.httpRequest({
  // 	 url: 'http://www.xuerendianying.com/bijia_api/fs/filmsessionlist/?movie=326929&cinema=4838&date=2016-03-25',
  	 url: 'http://www.xuerendianying.com/bijia_api/fs/filmsessionlist/?movie='+movie+'&cinema='+cinema+'&date='+date,
@@ -307,7 +307,7 @@ function getUrlData(url,charset,callback){
  	 },
  	 success: function(httpResponse) {
  		 console.log("success");
-		 console.log(httpResponse.text);
+		//  console.log(httpResponse.text);
  		 var BJData = eval("BJData="+httpResponse.text);
 		 var priceData = {};
  	// 	 console.log(BJData);
@@ -322,21 +322,23 @@ function getUrlData(url,charset,callback){
 		 }
 		 priceData.price = minPrice;
 		 priceData.showtime = minData.showtime;
-		 console.log(minData);
+		//  console.log(minData);
 		 var nameList = {};
 		 for(var i = 0; i < minData.channel_list.length; i++){
 			 var name = minData.channel_list[i].name;
 			 var price = minData.channel_list[i].price;
 			 if(price == minPrice){
 				 nameList[i] = minData.channel_list[i].name;
-				 console.log(minData.channel_list[i].name);
+				//  console.log(minData.channel_list[i].name);
 			 }
 		 }
 		 priceData.nameList = nameList;
-		 console.log(priceData);
+		//  console.log(priceData);
+		 callback.success(priceData);
  	 },
  	 error: function(httpResponse) {
  		 console.error('Request failed with response code ' + httpResponse.status);
+		 callback.error(httpResponse);
  	 }
   });
  }
@@ -460,10 +462,82 @@ function getUrlData(url,charset,callback){
 
 
    /************************************通知*****************************************************/
+	 function formatDate (format,timestamp,full) {
+        format = format.toLowerCase();
+        if(!format) format = "y-m-d h:i:s";
+        function zeroFull(str){
+            // console.log(full);
+            // return full ? (str >= 10 ? str : ('0' + str)) : str;
+            return (str >= 10 ? str : ('0' + str));
+        }
+        var time = new Date(timestamp),o = {
+            y : time.getFullYear(),
+            m : zeroFull(time.getMonth() + 1),
+            d : zeroFull(time.getDate()),
+            h : zeroFull(time.getHours()),
+            i : zeroFull(time.getMinutes()),
+            s : zeroFull(time.getSeconds())
+        };
+        return format.replace(/([a-z])(\1)*/ig,function(m){
+            return o[m];
+        });
+    };
+	 function getBJId(name,callback){
+		 var query = new AV.Query('Movies');
+		 query.equalTo('name', name);
+		 query.first().then(function(results) {
+			 // 处理返回的结果数据
+			 console.log(results);
+			 callback.success(results);
+		 }, function(error) {
+			 console.log('Error: ' + error.code + ' ' + error.message);
+			 callback.error(results);
+		 });
+	 }
    function sendLowPriceEmail(){
-
+		 	var query = new AV.Query('Attention');
+			query.find().then(function(results) {
+			  console.log('Successfully retrieved ' + results.length + ' posts.');
+			  // 处理返回的结果数据
+			  for (var i = 0; i < results.length; i++) {
+			    var object = results[i];
+			    console.log(object);
+					getBJId(object.attributes.name,{
+						success:function(result){
+							var bid = result.attributes.bid;
+							var price = object.attributes.price;
+							var date = new Date().getTime();
+							date = formatDate("y-m-d",date);
+							console.log(date);
+							getPriceFromBJData(bid,'4838',date,{
+								success:function(result){
+									console.log(result);
+									var minPrice = result.price;
+									console.log(price);
+									if(minPrice < price){
+										// console.log("发送成功");
+										var email = object.attributes.email;
+										sendEmail(email,result.name,result.nameList[0]);
+									}
+								},
+								error:function(error){
+									console.log(error);
+								}
+							})
+							return;
+							console.log(result.attributes.bid);
+							// getPriceFromBJData('326929','4838','2016-03-28');
+						},
+						error:function(error){
+							console.log(error);
+						}
+					});
+			  }
+			}, function(error) {
+			  console.log('Error: ' + error.code + ' ' + error.message);
+			});
    }
-
+	 sendLowPriceEmail();
 
 // getPriceFromBJData();
 
@@ -716,19 +790,26 @@ function getMovieDetailFromNM(mid,callback){
 function sendEmail(to,movie,platform){
 	//这里是初始化，需要定义发送的协议，还有你的服务邮箱，当然包括密码了
 	var smtpTransport = nodemailer.createTransport("SMTP",{
-	    service: "Gmail",
-	    auth: {
-	        user: "raodaqi@gmail.com",
-	        pass: "rdq951019"
-	    }
+	    // service: "Gmail",
+	    // auth: {
+	    //     user: "raodaqi@gmail.com",
+	    //     pass: "rdq951019"
+	    // }
+			host: "smtp.qq.com", // 主机
+	    secureConnection: true, // 使用 SSL
+	    port: 465, // SMTP 端口
+			auth: {
+        user: "598471284@qq.com", // 账号
+        pass: "ujmeahoeapczbfag" // 密码
+    }
 	});
 	//邮件配置，发送一下 unicode 符合的内容试试！
 	var mailOptions = {
-	    from: "raodaqi@gmail.com",       // 发送地址
+	    from: "Fred Foo <598471284@qq.com>",       // 发送地址
 	    // to: "bar@blurdybloop.com, baz@blurdybloop.com", // 接收列表
-	    to: "598471284@qq.com,260940356@qq.com",
-	    subject: "您关注的电影疯狂动物城在百度糯米上价格低于您设置的价格  ",                             // 邮件主题
-	    text: "快去糯米上购买吧。祝你观影愉快",                          // 文本内容
+	    to: to,
+	    subject: "您关注的电影"+movie+"在"+platform+"上价格低于您设置的价格  ",                             // 邮件主题
+	    text: "快去"+platform+"上购买吧。祝你观影愉快",                          // 文本内容
 	    html: ""                    // html内容
 	}
 	//开始发送邮件
@@ -743,6 +824,7 @@ function sendEmail(to,movie,platform){
 	});
 }
 
+// sendEmail("598471284@qq.com","ceshi","ceshi");
 // getMoviesData();
 function getBJMovies(){
 	getMoviePage1FromBJData();
@@ -921,7 +1003,7 @@ app.post('/attention', function(req, res) {
 	var price = req.body.price;
 	var currentUser = AV.User.current();
 	var post = AV.Object.new('Attention');
-	
+
 	// return;
 	if(currentUser){
 		var email = currentUser.attributes.email;
