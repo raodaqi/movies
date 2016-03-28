@@ -37,7 +37,25 @@
 		font-size: 22px;
 		height: 50px;
 		line-height: 50px;
-		margin-left: 14px;
+		margin-left: 69px;
+		width: 120px;
+		text-align: center;
+		overflow: hidden;
+	}
+	.title-caidan{
+		float: right;
+		height: 50px;
+		line-height: 50px;
+		width: auto;
+	}
+	.save{
+		font-size: 26px;
+		margin-right: 3px;
+	}
+	.saved{
+		font-size: 26px;
+		margin-right: 3px;
+		display: none;
 	}
 	.movie-information-photo {
 		width: 100%;
@@ -118,6 +136,10 @@
 		</a>
 		<div class="title-name">
 			<%= movieDetail.name %></div>
+			<a class="title-caidan">
+				<div class="iconfont icon-shoucang save"></div>
+				<div class="iconfont icon-shoucang1 saved"></div>
+			</a>
 	</div>
 	<div class="movie-information-photo">
 		<img src="<%= poster %>"></div>
@@ -146,13 +168,22 @@
 							<%=key%></div>
 						<div class="movie-cast-details">
 							<%= movieDetail.cast[key] %>
-<!-- 							<div class="up"></div> -->
 						</div>
 					</li>
 					<% } %></ul>
 			</div>
 		</div>
 	</div>
+</div>
+<div class="ui-actionsheet">  
+  <div class="ui-actionsheet-cnt">
+    <h4>收藏</h4> 
+    <button class="submite-price" data-price="15">15以下</button>
+    <button class="submite-price" data-price="25">25以下</button>
+    <button class="submite-price" data-price="35">35以下</button>  
+   <!--  <button class="ui-actionsheet-del">删除</button> -->
+    <button class="cancel">取消</button> 
+  </div>         
 </div>
 <% include footer.ejs %>
 <script type="text/javascript">
@@ -188,6 +219,20 @@
 		          {
 			           $(this).addClass("add-height");
 		          }
+		})
+		$(".save").click(function(){
+			$('.ui-actionsheet').addClass('show');
+		})
+		$(".cancel").click(function(){
+			$('.ui-actionsheet').removeClass('show');
+		})
+		$(".submite-price").click(function(){
+			$(".save").hide();
+			$(".saved").show();
+			$('.ui-actionsheet').removeClass('show');
+			var prices = $(this).attr("data-price");
+			console.log(prices);
+			alert(prices);
 		})
 	</script>
 </html>
