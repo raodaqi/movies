@@ -763,19 +763,29 @@ function moviesDelete(){
 	var j = schedule.scheduleJob(rule, function(){
 	    // console.log('我在这里处理了某些事情...');
 	    moviesDelete();
-			getMoviesData();
+			// getMoviesData();
 			// getBJMovies();
 	});
 
 	var rule2 = new schedule.RecurrenceRule();
-	rule2.hour =0;rule2.minute =0;rule2.second =2;
+	rule2.hour =0;rule2.minute =2;rule2.second =0;
 
 	//处理要做的事情
 	 var k = schedule.scheduleJob(rule2, function(){
 			 // console.log('我在这里处理了某些事情...');
+			 getMoviesData();
+			 // getBJMovies();
+	 });
+	 var rule3 = new schedule.RecurrenceRule();
+	 rule3.hour =0;rule3.minute =4;rule3.second =0;
+
+	//处理要做的事情
+	 var l = schedule.scheduleJob(rule3, function(){
+			 // console.log('我在这里处理了某些事情...');
+			 // getBJMovies();
 			 getBJMovies();
 	 });
-
+	 // getBJMovies();
 // getMovieDetailFromNM("9932");
 app.get('/announce', function(req, res) {
 		// var query = new AV.Query('Announce');
@@ -789,6 +799,64 @@ app.get('/announce', function(req, res) {
 		// 	res.render('announce', {results:error});
 		// });
 
+});
+
+app.get('/signin', function(req, res) {
+	console.log(req.AV.user);
+  if (req.AV.user) {
+        res.redirect('/movie');
+    } else {
+        res.render('signin');
+    }
+});
+
+app.get('/logout', function(req, res) {
+  // AV.Cloud.CookieSession 将自动清除登录 cookie 信息
+  AV.User.logOut();
+  res.redirect('/signin');
+});
+
+app.post('/signin', function(req, res) {
+  var username = req.body.email;
+  var password = req.body.password;
+  AV.User.logIn(username, password, {
+	  success: function(user) {
+	    // 成功了，现在可以做其他事情了.
+	    res.send(user);
+	  },
+	  error: function(user, error) {
+	    // 失败了.
+	    res.send(error);
+	  }
+	});
+});
+
+app.get('/users/signup', function(req, res) {
+  res.render('signup');
+});
+
+app.post('/users/info', function(req, res) {
+  var email = req.body.email;
+  var password = req.body.password;
+  var user = new AV.User();
+  user.set("email", email);
+  user.set("password", password);
+  user.set("username", email);
+
+  user.signUp(null, {
+		success: function(user) {
+		    // 注册成功，可以使用了.
+		    if(user){
+		    	res.send(user);
+		    	// res.render('/setverifysent', { user: user });
+		    }
+		},
+		error: function(user, error) {
+		    // 失败了
+		    console.log("Error: " + error.code + " " + error.message);;
+		    res.send("Error: " + error.code + " " + error.message);;
+		}
+	});
 });
 
 app.get('/detail/:id', function(req, res) {
@@ -840,6 +908,88 @@ app.post('/price', function(req, res) {
 		}
 	})
 });
+
+app.post('/attention', function(req, res) {
+	var name = req.body.name;
+	var price = req.body.price;
+	var currentUser = AV.User.current();
+	var email = currentUser.attributes.email;
+	var post = AV.Object.new('Attention');
+	
+	// return;
+	if(currentUser){
+		console.log(currentUser.attributes.email);
+		// post.set("name", name);
+		// post.set("price", price);
+		// post.set("email", email);
+		var query = new AV.Query('Attention');
+		query.equalTo("email", email);
+		query.equalTo("name", name);
+		query.find().then(function(results) {
+		  console.log('Successfully retrieved ' + results.length + ' posts.');
+		  // 处理返回的结果数据
+		  console.log(results.length);
+			if(results.length=="0"){
+				post.set("name", name);
+				post.set("price", price);
+				post.set("email", email);
+				post.save().then(function(post) {
+				  // 成功保存之后，执行其他逻辑.
+				  console.log('New object created with objectId: ' + post.id);
+				}, function(err) {
+				  // 失败之后执行其他逻辑
+				  // error 是 AV.Error 的实例，包含有错误码和描述信息.
+				  console.log('Failed to create new object, with error message: ' + err.message);
+				});
+			}else {
+			    query.get(results[0].id).then(function(post) {
+			        // 成功，回调中可以取得这个 Post 对象的一个实例，然后就可以修改它了
+			        post.set("name", name);
+					post.set("price", price);
+					post.set("email", email);
+			        post.save().then(function(post) {
+			            // 成功保存之后，执行其他逻辑.
+			            console.log('New object created with objectId: ' + post.id);
+				    }, function(err) {
+				            // 失败之后执行其他逻辑
+				            // error 是 AV.Error 的实例，包含有错误码和描述信息.
+				        console.log('Failed to create new object, with error message: ' + err.message);
+				    });
+			    }, function(error) {
+			        // 失败了
+			        console.log(error);
+			    });
+			}
+		}, function(error) {
+		  console.log('Error: ' + error.code + ' ' + error.message);
+		});
+	}
+	// post.set("name", name);
+	// post.set("price", price);
+	// post.save().then(function(post) {
+	// 	// 成功保存之后，执行其他逻辑.
+	// 	console.log('New object created with objectId: ' + post.id);
+	// }, function(err) {
+	// 	// 失败之后执行其他逻辑
+	// 	// error 是 AV.Error 的实例，包含有错误码和描述信息.
+	// 	console.log('Failed to create new object, with error message: ' + err.message);
+	// });
+});
+
+// app.post('/price', function(req, res) {
+// 	var id = req.body.id;
+// 	console.log(id);
+// 	getMovieIngData(id,"",{
+// 		success:function(price){
+// 			console.log(price);
+// 			res.send(price);
+// 		},
+// 		error:function(error){
+// 			console.log(error);
+// 			// res.send(error);
+// 		}
+// 	})
+// });
 
 app.get('/', function(req, res) {
 	res.render('test', {});

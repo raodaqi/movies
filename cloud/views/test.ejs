@@ -155,5 +155,29 @@
 	 //          }
 	 //        });
 		// })
+		//
+		var test = navigator;
+		console.log(test);
+
+		var data ={
+	        'name':'疯狂动物城',
+	        'price':'20'
+	      }
+	        $.ajax({
+	          type : "POST",
+	          data: data,
+	          dataType: "json",
+	          url : "/attention",
+	          success : function(result){
+	            // if(result.username){
+	            //   alert("登陆成功");
+	            // }else{
+	            //   alert(result.message);
+	            // }
+	          },
+	          error: function(error){
+	            alert(error);
+	          }
+	        });
 	</script>
 </html>
