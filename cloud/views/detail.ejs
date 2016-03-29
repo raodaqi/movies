@@ -127,6 +127,9 @@
 	.add-height{
 		height: 45px;
 	}
+	#save{
+		font-size: 20px;
+	}
 	</style>
 <body>
 <div class="movie">
@@ -177,7 +180,7 @@
 </div>
 <div class="ui-actionsheet">  
   <div class="ui-actionsheet-cnt">
-    <h4>收藏</h4> 
+    <h4 id="save">收藏</h4> 
     <button class="submite-price" data-price="15">15以下</button>
     <button class="submite-price" data-price="25">25以下</button>
     <button class="submite-price" data-price="35">35以下</button>  
@@ -236,7 +239,7 @@
 			console.log(names);
 		var data ={
 	        'name':'names',
-	        'price':'prices'
+	        'price':prices
 	      }
 	        $.ajax({
 	          type : "POST",
