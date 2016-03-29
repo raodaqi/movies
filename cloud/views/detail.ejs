@@ -189,8 +189,8 @@
 						<div class="movie-cast-detail">
 							<div class="movie-cast-details">
 								<%= movieDetail.cast[key] %></div>
-							<div class="iconfont icon-shang up"></div>
 							<div class="iconfont icon-xia down"></div>
+							<div class="iconfont icon-shang up"></div>							
 						</div>
 					</li>
 					<% } %></ul>
@@ -242,12 +242,18 @@
 		      if(length>49)
 		          {
 		          	   $(this).addClass("add-height");
-			           $(".up").show();
+			           $(this).next().show();
 		          }
         })
-        $(".movie-cast-detail").click(function(){
-        	// $(this).siblings().removeClass("add-height");
-        	// $(this).hide();
+        $(".down").click(function(){
+        	$(this).siblings().removeClass("add-height");
+        	$(this).next().show();
+        	$(this).hide();
+        })
+        $(".up").click(function(){
+        	$(this).siblings().addClass("add-height");
+        	$(this).prev().show();
+        	$(this).hide();
         })
 		$(".save").click(function(){
 			$('.ui-actionsheet').addClass('show');
