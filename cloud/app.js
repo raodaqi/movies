@@ -537,7 +537,30 @@ function getUrlData(url,charset,callback){
 			  console.log('Error: ' + error.code + ' ' + error.message);
 			});
    }
-	 sendLowPriceEmail();
+
+	 function ifSendEmail(email,movie,price,date){
+			var query = new AV.Query('SendLog');
+			query.equalTo('email', email);
+			query.equalTo('movie', email);
+			query.equalTo('price', email);
+			query.equalTo('date', email);
+			query.find().then(function(results) {
+			  console.log('Successfully retrieved ' + results.length + ' posts.');
+			  // 处理返回的结果数据
+			  for (var i = 0; i < results.length; i++) {
+			    var object = results[i];
+			    console.log(object.id + ' - ' + object.get('content'));
+			  }
+				if(results.length){
+
+				}else{
+					
+				}
+			}, function(error) {
+			  console.log('Error: ' + error.code + ' ' + error.message);
+			});
+	 }
+	//  sendLowPriceEmail();
 
 // getPriceFromBJData();
 
