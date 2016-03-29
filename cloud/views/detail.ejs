@@ -130,6 +130,17 @@
 	#save{
 		font-size: 20px;
 	}
+	.movie-cast-detail{
+		height: auto;
+		width: auto;
+	}
+	.up{
+		width: 100%;
+		bottom: 0;
+		position: fixed;
+		height: 20px;
+		display: none;
+	}
 	</style>
 <body>
 <div class="movie">
@@ -169,8 +180,11 @@
 					<li>
 						<div class="movie-cast-title">
 							<%=key%></div>
-						<div class="movie-cast-details">
-							<%= movieDetail.cast[key] %>
+						<div class="movie-cast-detail">
+							<div class="movie-cast-details">
+								<%= movieDetail.cast[key] %>
+							</div>
+							<div class="iconfont icon-shang up"></div>
 						</div>
 					</li>
 					<% } %></ul>
@@ -216,13 +230,22 @@
 		$(".return-MainPage").click(function(){
 			history.go(-1);
 		})
-		$(".movie-cast-details").each(function(i,v){
-		    var length = $(".movie-cast-details").height();
+		$('.movie-cast-details').each(function(i,k){ 
+	        var length = $(this).height();
+	        console.log(length);
 		      if(length>44)
 		          {
 			           $(this).addClass("add-height");
+			           $(".up").show();
 		          }
-		})
+        })
+		// $(".movie-cast-details").each(function(i,v){
+		//     var length = $(".movie-cast-details").height();
+		//       if(length>44)
+		//           {
+		// 	           $(this).addClass("add-height");
+		//           }
+		// })
 		$(".save").click(function(){
 			$('.ui-actionsheet').addClass('show');
 		})
