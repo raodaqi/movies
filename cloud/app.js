@@ -514,10 +514,24 @@ function getUrlData(url,charset,callback){
 									console.log(result);
 									var minPrice = result.price;
 									console.log(price);
-									if(minPrice < price){
-										// console.log("发送成功");
+									if(minPrice <= price){
 										var email = object.attributes.email;
-										sendEmail(email,result.name,result.nameList[0]);
+										ifSendEmail(email,result.name,minPrice,date,{
+											success:function(successLog){
+												console.log(successLog.code);
+												// sendEmail(email,result.name,result.nameList[0]);
+												if(successLog.code){
+													console.log("发送邮件");
+													sendEmail(email,result.name,result.nameList[0]);
+												}else{
+													console.log("邮箱已发送过");
+												}
+											},
+											error:function(error){
+												console.log(error);
+											}
+										})
+										// sendEmail(email,result.name,result.nameList[0]);
 									}
 								},
 								error:function(error){
@@ -538,25 +552,59 @@ function getUrlData(url,charset,callback){
 			});
    }
 
-	 function ifSendEmail(email,movie,price,date){
+	 function ifSendEmail(email,movie,price,date,callback){
 			var query = new AV.Query('SendLog');
 			query.equalTo('email', email);
-			query.equalTo('movie', email);
-			query.equalTo('price', email);
-			query.equalTo('date', email);
+			query.equalTo('movie', movie);
+			query.equalTo('price', price);
+			query.equalTo('date', date);
 			query.find().then(function(results) {
-			  console.log('Successfully retrieved ' + results.length + ' posts.');
 			  // 处理返回的结果数据
-			  for (var i = 0; i < results.length; i++) {
-			    var object = results[i];
-			    console.log(object.id + ' - ' + object.get('content'));
-			  }
+			  var Post = AV.Object.extend('SendLog');
+				console.log(results.length);
 				if(results.length){
-
+					callback.success({code:0});
+					var query = new AV.Query(Post);
+					// 这个 id 是要修改条目的 objectId，你在生成这个实例并成功保存时可以获取到，请看前面的文档
+					query.get(results.id).then(function(post) {
+					  // 成功，回调中可以取得这个 Post 对象的一个实例，然后就可以修改它了
+					  post.set('email',email);
+						post.set('movie',movie);
+						post.set('price',price);
+						post.set('date',date);
+					  post.save().then(function(post) {
+						  // 成功保存之后，执行其他逻辑.
+						  // res.send(post);
+						  console.log("更新成功");
+						  console.log('New object created with objectId: ' + post.id);
+						}, function(err) {
+						  // 失败之后执行其他逻辑
+						  // error 是 AV.Error 的实例，包含有错误码和描述信息.
+						  res.send(err);
+						  console.log('Failed to create new object, with error message: ' + err.message);
+						});
+					}, function(error) {
+					  // 失败了
+					});
 				}else{
-					
+					var post = new Post();
+					post.set('email',email);
+					post.set('movie',movie);
+					post.set('price',price);
+					post.set('date',date);
+					post.save().then(function(post) {
+					  // 成功保存之后，执行其他逻辑.
+					  console.log('New object created with objectId: ' + post.id);
+						console.log("保存成功");
+						callback.success({code:1});
+					}, function(err) {
+					  // 失败之后执行其他逻辑
+					  // error 是 AV.Error 的实例，包含有错误码和描述信息.
+					  console.log('Failed to create new object, with error message: ' + err.message);
+					});
 				}
 			}, function(error) {
+				callback.error(error);
 			  console.log('Error: ' + error.code + ' ' + error.message);
 			});
 	 }
@@ -973,6 +1021,9 @@ app.post('/users/info', function(req, res) {
 
 app.get('/detail/:id', function(req, res) {
 	var id = req.params.id;
+	var currentUser = AV.User.current();
+	var email = currentUser.attributes.email;
+
 	console.log(id);
 	var query = new AV.Query('Movies');
 	query.equalTo('mid', id);
@@ -991,15 +1042,28 @@ app.get('/detail/:id', function(req, res) {
 					getMovieDetailFromNM(id,{
 						success:function(movieDetail){
 							// console.log(result);
-							res.render('detail', {movieDetail:movieDetail,id:id,poster:poster});
+							// res.render('detail', {movieDetail:movieDetail,id:id,poster:poster});
+							if(email){
+								getAttention(email,movieDetail.name,{
+									success:function(attention){
+										console.log(attention);
+										res.render('detail', {movieDetail:movieDetail,id:id,poster:poster,attention:attention});
+									},
+									error:function(error){
+										console.log(error);
+									}
+								});
+							}else{
+								res.render('detail', {movieDetail:movieDetail,id:id,poster:poster,attention:0});
+							}
 						},
 						error:function(error){
 							console.log(error);
-							res.render('detail', {movieDetail:'',id:'',poster:''});
+							res.render('detail', {movieDetail:'',id:'',poster:'',attention:0});
 						}
 					})
 		}else{
-			res.render('detail', {movieDetail:"",id:'',poster:''});
+			res.render('detail', {movieDetail:"",id:'',poster:'',attention:0});
 		}
 	}, function(error) {
 	  console.log('Error: ' + error.code + ' ' + error.message);
@@ -1059,23 +1123,23 @@ app.post('/attention', function(req, res) {
 			    query.get(results[0].id).then(function(post) {
 			        // 成功，回调中可以取得这个 Post 对象的一个实例，然后就可以修改它了
 			        post.set("name", name);
-					post.set("price", price);
-					post.set("email", email);
-			        post.save().then(function(post) {
-			            // 成功保存之后，执行其他逻辑.
-			            res.send(post);
-			            console.log('New object created with objectId: ' + post.id);
-				    }, function(err) {
-				            // 失败之后执行其他逻辑
-				            // error 是 AV.Error 的实例，包含有错误码和描述信息.
-				        res.send(err);
-				        console.log('Failed to create new object, with error message: ' + err.message);
-				    });
-			    }, function(error) {
-			        // 失败了
-			        res.send(error);
-			        console.log(error);
-			    });
+							post.set("price", price);
+							post.set("email", email);
+					        post.save().then(function(post) {
+					            // 成功保存之后，执行其他逻辑.
+					            res.send(post);
+					            console.log('New object created with objectId: ' + post.id);
+						    }, function(err) {
+						            // 失败之后执行其他逻辑
+						            // error 是 AV.Error 的实例，包含有错误码和描述信息.
+						        res.send(err);
+						        console.log('Failed to create new object, with error message: ' + err.message);
+						    });
+					    }, function(error) {
+					        // 失败了
+					        res.send(error);
+					        console.log(error);
+					    });
 			}
 		}, function(error) {
 		  res.send(error);
@@ -1119,17 +1183,91 @@ app.get('/test', function(req, res) {
   res.render('test', {});
 });
 
+function getAttention(email,movie,callback){
+	var query = new AV.Query('Attention');
+	if(!movie){
+		query.equalTo('email', email);
+		query.find().then(function(results) {
+		  // callback.success(results);
+			var attention = [];
+			for(var i = 0; i < results.length; i++){
+				attention[i] = {
+					"name":results[i].attributes.name
+				};
+			}
+			// console.log(attention);
+			callback.success(attention);
+		}, function(error) {
+		  // console.log('Error: ' + error.code + ' ' + error.message);
+		  callback.success(error);
+		});
+	}else{
+		query.equalTo('email', email);
+		query.equalTo('name', movie);
+		query.find().then(function(results) {
+		  // callback.success(results);
+			var attention = results.length;
+			// console.log(attention);
+			callback.success(attention);
+		}, function(error) {
+		  // console.log('Error: ' + error.code + ' ' + error.message);
+		  callback.success(error);
+		});
+	}
+}
+// getAttention("598471284@qq.com","疯狂动物城",{
+// 	success:function(attention){
+// 		console.log(attention);
+// 	},
+// 	error:function(error){
+// 		console.log(error);
+// 	}
+// });
 app.get('/movie', function(req, res) {
+	var currentUser = AV.User.current();
+	var email = currentUser.attributes.email;
 	var query = new AV.Query('Movies');
 	query.notEqualTo('mid', null);
 	query.addDescending('star');
 	query.find().then(function(results) {
 		// 处理返回的结果数据
-		console.log(results);
-		res.render('movie', {results:results});
+		// console.log(results);
+		// res.render('movie', {results:results});
+		if(email){
+			getAttention(email,"",{
+				success:function(attention){
+					// console.log(results.length);
+					// console.log(attention);
+					var attentionData = {}
+					for(var i = 0; i < results.length; i++){
+						for(var j = 0; j < attention.length; j++){
+							// console.log(results[i].attributes.name);
+							// console.log(attention[j].name);
+							if(results[i].attributes.name == attention[j].name){
+								attentionData[j] = {
+									"name":results[i].attributes.name,
+									"mid":results[i].attributes.mid,
+									"type":results[i].attributes.type,
+									"img":results[i].attributes.img,
+									"star":results[i].attributes.star,
+									"releaseDate":results[i].attributes.releaseDate
+								}
+							}
+						}
+					}
+					// console.log(attentionData);
+					res.render('movie', {results:results,attentionData:attentionData,email:email});
+				},
+				error:function(error){
+					console.log(error);
+				}
+			});
+		}else{
+			res.render('movie', {results:results,attentionData:'',email:""});
+		}
 	}, function(error) {
 		console.log('Error: ' + error.code + ' ' + error.message);
-		res.render('movie', {results:error});
+		res.render('movie', {results:error,attentionData:'',email:""});
 	});
   // res.render('movie', {});
 });
