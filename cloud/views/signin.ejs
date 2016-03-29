@@ -2,8 +2,13 @@
 <style type="text/css">
   .icon{
       display:block;
-      margin:16px 20px;
+      /*margin:16px 20px;*/
       font-weight:600;
+      border-bottom: 1px solid #EAEAEA;
+      height: 50px;
+      line-height: 50px;
+      font-size: 25px;
+      text-align: center;
     }
   .form{
       display:block;
@@ -12,25 +17,31 @@
   .form-container{
       display:block;
       box-sizing: border-box;
-      width:64%;
+      width:100%;
       max-width:500px;
       height:50px;
-      margin:24px auto;
+      /*margin:25px auto;*/
       padding:18px 20px;
       border-radius: 5px;
+      border: 0;
+      margin-top: 5px;
   }
   .btn-content{
       background:#66afe9;
       border-color: #66afe9;
       line-height:12px;
       color:white !important;
-      margin:38px auto;
+      width: 80%;
+      margin-top: 35px;
+      margin-left: 10%;
   }
   .btn-content-empty{
-      background:#fff;
       border-color: #66afe9;
       color:#66afe9 !important;
       line-height:12px;
+      width: 120px;
+      float: right;
+      margin-top: 169px;
   }
   .divider{
       text-align:center;
@@ -52,21 +63,26 @@
       font-size:24px;
       padding:8px 40px;
   }
+  .hide{
+    height: 100px;
+    width: auto;
+  }
 </style>
 <body>
-  <a href="./" class="icon"> <i>乐映|</i>
+  <a href="./" class="icon"> 乐映
   </a>
-  <div>
+  <!-- <div>
     <div class="divider">
       <span>登录</span>
     </div>
-  </div>
+  </div> -->
+  <div class="hide"></div> 
   <form action="./signin" method="post">
     <input placeholder="邮箱" class="form-control form-container" name="email">
     <input type="password" placeholder="密码" class="form-control form-container" name="password"></form>
     <button class="form-container btn btn-block btn-content" id="signin">登录</button>
   <a href="./users/signup">
-    <button class="form-container btn btn-block btn-content-empty">我是新用户，我要注册</button>
+    <button class="form-container btn btn-block btn-content-empty">新用户注册</button>
   </a>
 <% include footer.ejs %>
 <script type="text/javascript">
