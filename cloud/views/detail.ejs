@@ -204,8 +204,6 @@
 		<button class="submite-price" data-price="15">15以下</button>
 		<button class="submite-price" data-price="25">25以下</button>
 		<button class="submite-price" data-price="35">35以下</button>
-		<!--  <button class="ui-actionsheet-del">删除</button>
-	-->
 	<button class="cancel">取消</button>
 </div>
 </div>
@@ -237,18 +235,19 @@
 		$(".return-MainPage").click(function(){
 			history.go(-1);
 		})
-		$('.movie-cast-details').each(function(i,k){ 
+		$(".movie-cast-details").each(function(i,k){ 
 	        var length = $(this).height();
 	        console.log(length);
-		      if(length>44)
+	        // alert(length);
+		      if(length>49)
 		          {
 		          	   $(this).addClass("add-height");
 			           $(".up").show();
 		          }
         })
-        $(".up").click(function(){
-        	
-        	$(this).hide();
+        $(".movie-cast-detail").click(function(){
+        	// $(this).siblings().removeClass("add-height");
+        	// $(this).hide();
         })
 		$(".save").click(function(){
 			$('.ui-actionsheet').addClass('show');
