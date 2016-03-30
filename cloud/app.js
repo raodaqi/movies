@@ -313,12 +313,16 @@ function getUrlData(url,charset,callback){
  	// 	 console.log(BJData);
 		 var minData = BJData.filmsession_list[0];
 		 priceData.name = BJData.movie.title;
-		 var minPrice = BJData.filmsession_list[0]['min_price'];
-		 for(var i = 0; i < BJData.filmsession_list.length;i++){
-			 if(minPrice > BJData.filmsession_list[i]['min_price']){
-				 minPrice = BJData.filmsession_list[i]['min_price'];
-				 minData = BJData.filmsession_list[i];
+		 if(BJData.filmsession_list){
+			 var minPrice = BJData.filmsession_list[0]['min_price'];
+			 for(var i = 0; i < BJData.filmsession_list.length;i++){
+				 if(minPrice > BJData.filmsession_list[i]['min_price']){
+					 minPrice = BJData.filmsession_list[i]['min_price'];
+					 minData = BJData.filmsession_list[i];
+				 }
 			 }
+		 }else{
+
 		 }
 		 priceData.price = minPrice;
 		 priceData.showtime = minData.showtime;
@@ -342,7 +346,11 @@ function getUrlData(url,charset,callback){
  	 }
   });
  }
- // getPriceFromBJData('326929','4838','2016-03-28');
+ // getPriceFromBJData('326929','4838','2016-03-31',{
+ //  success:function(result){
+ // 	 console.log(result);
+ //  }
+ // });
  /*********************************爬取正在上映的电影**********************************/
   function getMoviePage1FromBJData(){
   	AV.Cloud.httpRequest({
@@ -508,12 +516,12 @@ function getUrlData(url,charset,callback){
 							var price = object.attributes.price;
 							var date = new Date().getTime();
 							date = formatDate("y-m-d",date);
-							console.log(date);
+							console.log("date:"+date+" "+"bid:"+bid);
 							getPriceFromBJData(bid,'4838',date,{
 								success:function(result){
 									console.log(result);
 									var minPrice = result.price;
-									console.log(price);
+									console.log(minPrice);
 									if(minPrice <= price){
 										var email = object.attributes.email;
 										ifSendEmail(email,result.name,minPrice,date,{
@@ -538,7 +546,6 @@ function getUrlData(url,charset,callback){
 									console.log(error);
 								}
 							})
-							return;
 							console.log(result.attributes.bid);
 							// getPriceFromBJData('326929','4838','2016-03-28');
 						},
@@ -900,7 +907,7 @@ function sendEmail(to,movie,platform){
 function getBJMovies(){
 	getMoviePage1FromBJData();
 	getMoviePage2FromBJData();
-	getMoviePage3FromBJData();
+	// getMoviePage3FromBJData();
 }
 // getBJMovies();
 //清空movies里的所有数据
@@ -945,7 +952,8 @@ function moviesDelete(){
 			 // getBJMovies();
 			 getBJMovies();
 	 });
-	//  return;
+	// getMoviesData();
+	// getBJMovies();
 
 	 var sendRule = new schedule.RecurrenceRule();
 　　var times = [0,30];
@@ -959,7 +967,7 @@ function moviesDelete(){
       　console.log(c);
 				sendLowPriceEmail();
 　　});
-
+// sendLowPriceEmail();
 	 // getBJMovies();
 // getMovieDetailFromNM("9932");
 app.get('/announce', function(req, res) {
@@ -1067,7 +1075,7 @@ app.get('/detail/:id', function(req, res) {
 								console.log(movieDetail.name+":"+movieDetail.name.length);
 								getAttention(email,movieDetail.name,{
 									success:function(attention){
-										console.log(attention);
+										console.log("attention:"+attention);
 										res.render('detail', {movieDetail:movieDetail,id:id,poster:poster,attention:attention});
 									},
 									error:function(error){

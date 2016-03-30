@@ -55,7 +55,7 @@
 	.saved{
 		font-size: 26px;
 		margin-right: 3px;
-		display: none;
+		/*display: none;*/
 	}
 	.movie-information-photo {
 		width: 100%;
@@ -154,12 +154,15 @@
 		<a class="return-MainPage">
 			<div class="iconfont icon-fanhui return"></div>
 		</a>
-		<div class="title-name" data-name="<%= movieDetail.name %>
-			">
+		<div class="title-name" data-name="<%= movieDetail.name %>">
 			<%= movieDetail.name %></div>
 		<a class="title-caidan" >
-			<div class="iconfont icon-shoucang save" data-attention="<%= movieDetail.attention %>"></div>
-			<div class="iconfont icon-shoucang1 saved"></div>
+			<% if(!attention) { %>
+				<div class="iconfont icon-shoucang save" data-attention="<%= attention %>"></div>
+				<div class="iconfont icon-shoucang1 saved" style="display:none"></div>
+			<% }else{ %>
+				<div class="iconfont icon-shoucang1 saved" data-attention="<%= attention %>"></div>
+			<% } %>
 		</a>
 	</div>
 	<div class="movie-information-photo">
