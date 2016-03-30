@@ -947,17 +947,17 @@ function moviesDelete(){
 	 });
 	//  return;
 
-	 var sendRule = new schedule.RecurrenceRule();
-　　var times = [];
-　　for(var i=1; i<60; i++){
-　　　　times.push(i);
-　　}
-　　sendRule.second = times;
-　　var c=0;
-　　var j = schedule.scheduleJob(sendRule, function(){
-     　　 c++;
-      　　console.log(c);
-　　});
+// 	 var sendRule = new schedule.RecurrenceRule();
+// 　　var times = [];
+// 　　for(var i=1; i<60; i++){
+// 　　　　times.push(i);
+// 　　}
+// 　　sendRule.second = times;
+// 　　var c=0;
+// 　　var j = schedule.scheduleJob(sendRule, function(){
+//      　　 c++;
+//       　　console.log(c);
+// 　　});
 
 	 // getBJMovies();
 // getMovieDetailFromNM("9932");
