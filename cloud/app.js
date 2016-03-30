@@ -1265,10 +1265,13 @@ app.get('/movie', function(req, res) {
 					// console.log(attention);
 					var attentionData = [];
 					for(var i = 0; i < results.length; i++){
+						// console.log(results[i].attributes.name+":"+results[i].attributes.name.length);
+						// console.log(results[i].attributes.name.length);
 						for(var j = 0; j < attention.length; j++){
-							// console.log(results[i].attributes.name);
 							// console.log(attention[j].name);
-							if(results[i].attributes.name == attention[j].name){
+							// console.log(attention[j].name+":"+attention[j].name.length);
+							if(attention[j].name.replace(/\s+/g,"") == results[i].attributes.name.replace(/\s+/g,"")){
+								console.log(attention[j].name);
 								attentionData[j] = {
 									"name":results[i].attributes.name,
 									"mid":results[i].attributes.mid,
