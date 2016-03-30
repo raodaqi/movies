@@ -157,8 +157,8 @@
 		<div class="title-name" data-name="<%= movieDetail.name %>
 			">
 			<%= movieDetail.name %></div>
-		<a class="title-caidan" data-attention="<%= movieDetail.attention %>">
-			<div class="iconfont icon-shoucang save"></div>
+		<a class="title-caidan" >
+			<div class="iconfont icon-shoucang save" data-attention="<%= movieDetail.attention %>"></div>
 			<div class="iconfont icon-shoucang1 saved"></div>
 		</a>
 	</div>
@@ -236,17 +236,6 @@
 		$(".return-MainPage").click(function(){
 			history.go(-1);
 		})
-		$(".title-caidan").each(function(){
-			var attention = $(this).attr("data-attention");
-			console.log(attention);
-			if(attention == 1){
-				$(".saved").show();
-				$(".save").hide();
-			}
-			else{
-				window.location.href="/signin";
-			}
-		})
 		$(".movie-cast-details").each(function(i,k){ 
 	        var length = $(this).height();
 	        console.log(length);
@@ -268,6 +257,16 @@
         	$(this).hide();
         })
 		$(".save").click(function(){
+			var attention = $(this).attr("data-attention");
+			console.log(attention);
+			// alert(attention);
+			if(attention == 1){
+				$(".saved").show();
+				$(".save").hide();
+			}
+			else{
+				// window.location.href="/signin";
+			}
 			$('.ui-actionsheet').addClass('show');
 		})
 		$(".cancel").click(function(){
