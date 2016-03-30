@@ -991,11 +991,11 @@ app.post('/signin', function(req, res) {
 	});
 });
 
-app.get('/users/signup', function(req, res) {
+app.get('/user/signup', function(req, res) {
   res.render('signup');
 });
 
-app.post('/users/info', function(req, res) {
+app.post('/user/info', function(req, res) {
   var email = req.body.email;
   var password = req.body.password;
   var user = new AV.User();

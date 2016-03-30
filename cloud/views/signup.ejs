@@ -70,42 +70,56 @@
 <body>
   <a href="./" class="icon"> 乐映
   </a>
-  <div class="hide"></div> 
+  <div class="hide"></div>
   <form action="./signup" method="post">
     <input placeholder="邮箱" class="form-control form-container" name="email">
     <input type="password" placeholder="密码" class="form-control form-container" name="password"></form>
     <button class="form-container btn btn-block btn-content" id="signup">注册</button>
-  <a href="./user/signin">
+  <a href="/signin">
     <button class="form-container btn btn-block btn-content-empty">用户登陆</button>
   </a>
 <% include footer.ejs %>
 <script type="text/javascript">
    $("#signup").on("click",function(){
-      loadingShow("正在注册");
+
+      // loadingShow("正在注册");
       var email = $("input[name=email]").val();
 
       var password = $("input[name=password]").val();
+      console.log(password.length);
 
       if(!check("邮箱不能为空",email) || !check("密码不能为空",password) || !checkEmail(email) || !checkPW(password)){
         loadingHide();
         return ;
       }
 
-      var data = $("input").serialize();
+      // var data = $("input").serialize();
+      var data ={
+        'email':$("input[name='email']").val(),
+        'password':$("input[name='password']").val()
+      }
         $.ajax({
           type : "POST",
           data: data,
           dataType: "json",
-          url : "/users/info",
+          url : "/user/info",
           success : function(json){
             // alert(json);
             loadingHide();
             tipShow("注册成功");
-            window.location.href= DOMIN+"setverifysent?email="+$("input[name=email]").val();
+            alert("注册成功");
+            // window.location.href= DOMIN+"setverifysent?email="+$("input[name=email]").val();
+            if(history.length > 1){
+              // window.history.go(-1);
+              location.href=document.referrer;
+            }else{
+              window.location.href="/movie";
+            }
           },
           error: function(error){
             loadingHide();
             console.log(error);
+            alert(error.responseText);
             tipShow(error.responseText);
             // tipShow("此用户存在");
           }
