@@ -1262,7 +1262,7 @@ app.get('/movie', function(req, res) {
 				success:function(attention){
 					// console.log(results.length);
 					// console.log(attention);
-					var attentionData = {}
+					var attentionData = [];
 					for(var i = 0; i < results.length; i++){
 						for(var j = 0; j < attention.length; j++){
 							// console.log(results[i].attributes.name);
@@ -1279,7 +1279,7 @@ app.get('/movie', function(req, res) {
 							}
 						}
 					}
-					// console.log(attentionData);
+					console.log(attentionData);
 					res.render('movie', {results:results,attentionData:attentionData,email:email});
 				},
 				error:function(error){
