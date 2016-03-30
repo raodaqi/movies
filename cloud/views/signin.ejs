@@ -2,7 +2,6 @@
 <style type="text/css">
   .icon{
       display:block;
-      /*margin:16px 20px;*/
       font-weight:600;
       border-bottom: 1px solid #EAEAEA;
       height: 50px;
@@ -71,17 +70,12 @@
 <body>
   <a href="./" class="icon"> 乐映
   </a>
-  <!-- <div>
-    <div class="divider">
-      <span>登录</span>
-    </div>
-  </div> -->
   <div class="hide"></div> 
   <form action="./signin" method="post">
     <input placeholder="邮箱" class="form-control form-container" name="email">
     <input type="password" placeholder="密码" class="form-control form-container" name="password"></form>
     <button class="form-container btn btn-block btn-content" id="signin">登录</button>
-  <a href="./users/signup">
+  <a href="./user/signup">
     <button class="form-container btn btn-block btn-content-empty">新用户注册</button>
   </a>
 <% include footer.ejs %>
