@@ -1022,7 +1022,12 @@ app.post('/users/info', function(req, res) {
 app.get('/detail/:id', function(req, res) {
 	var id = req.params.id;
 	var currentUser = AV.User.current();
-	var email = currentUser.attributes.email;
+	// var email = currentUser.attributes.email;
+	if(currentUser){
+		var email = currentUser.attributes.email;
+	}else{
+		var email = '';
+	}
 
 	console.log(id);
 	var query = new AV.Query('Movies');
@@ -1225,7 +1230,12 @@ function getAttention(email,movie,callback){
 // });
 app.get('/movie', function(req, res) {
 	var currentUser = AV.User.current();
-	var email = currentUser.attributes.email;
+	if(currentUser){
+		var email = currentUser.attributes.email;
+	}else{
+		var email = '';
+	}
+
 	var query = new AV.Query('Movies');
 	query.notEqualTo('mid', null);
 	query.addDescending('star');
