@@ -126,7 +126,7 @@
 		font-size: 15px;
 	}
 	.add-height{
-		height: 45px;
+		height: 48px;
 	}
 	#save{
 		font-size: 20px;
@@ -240,10 +240,14 @@
 	        var length = $(this).height();
 	        console.log(length);
 	        // alert(length);
-		      if(length>49)
+		      if(length>48)
 		          {
 		          	   $(this).addClass("add-height");
 			           $(this).next().show();
+		          }
+		          else{
+		          	$(this).next().next().remove();
+		          	$(this).next().remove();
 		          }
         })
         $(".down").click(function(){
@@ -255,6 +259,22 @@
         	$(this).siblings().addClass("add-height");
         	$(this).prev().show();
         	$(this).hide();
+        })
+        $(".movie-cast-details").click(function(){
+        	var length = $(this).height();
+	        console.log(length);
+	        // alert(length);
+		      if(length>48)
+		          {
+		          	   $(this).addClass("add-height");
+			           $(this).next().show();
+			           $(this).next().next().hide();
+		          }
+		          else{
+		          	$(this).removeClass("add-height");
+			           $(this).next().hide();
+			           $(this).next().next().show();
+		          }
         })
 		$(".save").click(function(){
 			var attention = $(this).attr("data-attention");
@@ -291,6 +311,8 @@
 	          url : "/attention",
 	          success : function(result){
 	            console.log("收藏成功");
+	            alert("收藏成功");
+	            window.location.href="/movie";
 	          },
 	          error: function(error){
 	            // alert(error);
