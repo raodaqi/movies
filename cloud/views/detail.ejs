@@ -191,7 +191,7 @@
 							<div class="movie-cast-details">
 								<%= movieDetail.cast[key] %></div>
 							<div class="iconfont icon-xia down"></div>
-							<div class="iconfont icon-shang up"></div>							
+							<div class="iconfont icon-shang up"></div>
 						</div>
 					</li>
 					<% } %></ul>
@@ -230,13 +230,13 @@
 				}
 				$(".price").append(ul);
 			},
-			error: function(error){			
+			error: function(error){
 			}
 		})
 		$(".return-MainPage").click(function(){
 			history.go(-1);
 		})
-		$(".movie-cast-details").each(function(i,k){ 
+		$(".movie-cast-details").each(function(i,k){
 	        var length = $(this).height();
 	        console.log(length);
 	        // alert(length);

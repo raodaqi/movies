@@ -1064,6 +1064,7 @@ app.get('/detail/:id', function(req, res) {
 							// console.log(result);
 							// res.render('detail', {movieDetail:movieDetail,id:id,poster:poster});
 							if(email){
+								console.log(movieDetail.name+":"+movieDetail.name.length);
 								getAttention(email,movieDetail.name,{
 									success:function(attention){
 										console.log(attention);
@@ -1107,6 +1108,7 @@ app.post('/price', function(req, res) {
 
 app.post('/attention', function(req, res) {
 	var name = req.body.name;
+	console.log(name+":"+name.length);
 	var price = req.body.price;
 	var currentUser = AV.User.current();
 	var post = AV.Object.new('Attention');
@@ -1227,7 +1229,8 @@ function getAttention(email,movie,callback){
 		query.find().then(function(results) {
 		  // callback.success(results);
 			var attention = results.length;
-			// console.log(attention);
+			console.log(results);
+			console.log("attention:"+attention);
 			callback.success(attention);
 		}, function(error) {
 		  // console.log('Error: ' + error.code + ' ' + error.message);
@@ -1270,6 +1273,8 @@ app.get('/movie', function(req, res) {
 						for(var j = 0; j < attention.length; j++){
 							// console.log(attention[j].name);
 							// console.log(attention[j].name+":"+attention[j].name.length);
+
+							// 数据库输入的数据存在空格，这里是出去字符串中的空格
 							if(attention[j].name.replace(/\s+/g,"") == results[i].attributes.name.replace(/\s+/g,"")){
 								console.log(attention[j].name);
 								attentionData[j] = {
