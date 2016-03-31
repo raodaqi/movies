@@ -1,4 +1,4 @@
-//leanengine配置
+  //leanengine配置
 var AV = require('leanengine');
 
 // 在 Cloud code 里初始化 Express 框架
@@ -277,6 +277,39 @@ function getUrlData(url,charset,callback){
  		}
  	});
  }
+ //爬取糯米网上成都耀莱电影院的电影
+ function getMoviePageFromNMData(){
+	 AV.Cloud.httpRequest({
+		url: 'http://cd.nuomi.com/pcindex/main/timetable?cinemaid=2a70b03e63fdb05e774ff173&mid=9738&needMovieInfo=1&tploption=1',
+		headers: {
+		},
+		success: function(httpResponse) {
+			console.log("success");
+		 console.log(httpResponse.text);
+			var BJData = eval("BJData="+httpResponse.text);
+			console.log(BJData);
+			for(var i = 0; i < BJData.results.length;i++){
+				var data = {};
+				data.bid = BJData.results[i].id;
+				data.name = BJData.results[i].title;
+				data.poster = BJData.results[i].poster;
+				data.poster_big = BJData.results[i].poster_big;
+				data.vertical_poster = BJData.results[i].vertical_poster;
+				data.type = 'showing';
+				saveMoviesData(data,"name","BJ",{
+					success:function(result){
+					},
+					error:function(error){
+						console.log(error)
+					}
+				});
+			}
+		},
+		error: function(httpResponse) {
+			console.error('Request failed with response code ' + httpResponse.status);
+		}
+	});
+ }
 
  function getMoviesFromMYData(){
 	 AV.Cloud.httpRequest({
@@ -310,10 +343,10 @@ function getUrlData(url,charset,callback){
 		//  console.log(httpResponse.text);
  		 var BJData = eval("BJData="+httpResponse.text);
 		 var priceData = {};
- 	// 	 console.log(BJData);
+ 		 console.log(BJData);
 		 var minData = BJData.filmsession_list[0];
 		 priceData.name = BJData.movie.title;
-		 if(BJData.filmsession_list){
+		 if(BJData.filmsession_list[0]){
 			 var minPrice = BJData.filmsession_list[0]['min_price'];
 			 for(var i = 0; i < BJData.filmsession_list.length;i++){
 				 if(minPrice > BJData.filmsession_list[i]['min_price']){
@@ -321,22 +354,34 @@ function getUrlData(url,charset,callback){
 					 minData = BJData.filmsession_list[i];
 				 }
 			 }
+			 priceData.price = minPrice;
+			 priceData.showtime = minData.showtime;
+			 var nameList = {};
+			for(var i = 0; i < minData.channel_list.length; i++){
+				var name = minData.channel_list[i].name;
+				var price = minData.channel_list[i].price;
+				if(price == minPrice){
+					nameList[i] = minData.channel_list[i].name;
+				 //  console.log(minData.channel_list[i].name);
+				}
+			}
+			priceData.nameList = nameList;
 		 }else{
 
 		 }
-		 priceData.price = minPrice;
-		 priceData.showtime = minData.showtime;
+		//  priceData.price = minPrice;
+		//  priceData.showtime = minData.showtime;
 		//  console.log(minData);
-		 var nameList = {};
-		 for(var i = 0; i < minData.channel_list.length; i++){
-			 var name = minData.channel_list[i].name;
-			 var price = minData.channel_list[i].price;
-			 if(price == minPrice){
-				 nameList[i] = minData.channel_list[i].name;
-				//  console.log(minData.channel_list[i].name);
-			 }
-		 }
-		 priceData.nameList = nameList;
+		//  var nameList = {};
+		//  for(var i = 0; i < minData.channel_list.length; i++){
+		// 	 var name = minData.channel_list[i].name;
+		// 	 var price = minData.channel_list[i].price;
+		// 	 if(price == minPrice){
+		// 		 nameList[i] = minData.channel_list[i].name;
+		// 		//  console.log(minData.channel_list[i].name);
+		// 	 }
+		//  }
+		//  priceData.nameList = nameList;
 		//  console.log(priceData);
 		 callback.success(priceData);
  	 },
@@ -346,11 +391,11 @@ function getUrlData(url,charset,callback){
  	 }
   });
  }
- // getPriceFromBJData('326929','4838','2016-03-31',{
- //  success:function(result){
- // 	 console.log(result);
- //  }
- // });
+ getPriceFromBJData('326929','4838','2016-03-31',{
+  success:function(result){
+ 	 console.log(result);
+  }
+ });
  /*********************************爬取正在上映的电影**********************************/
   function getMoviePage1FromBJData(){
   	AV.Cloud.httpRequest({
@@ -502,6 +547,38 @@ function getUrlData(url,charset,callback){
 			 callback.error(results);
 		 });
 	 }
+	//  sendLowPriceEmail();
+	 function sendEmailContent(data,i){
+		 getPriceFromBJData(bid,'4838',date,{
+			 success:function(result){
+				 console.log(result);
+				 var minPrice = result.price;
+				 console.log(minPrice);
+				 if(minPrice <= price){
+					 var email = object.attributes.email;
+					 ifSendEmail(email,result.name,minPrice,date,{
+						 success:function(successLog){
+							 console.log(successLog.code);
+							 // sendEmail(email,result.name,result.nameList[0]);
+							 if(successLog.code){
+								 console.log("发送邮件");
+								 sendEmail(email,result.name,result.nameList[0]);
+							 }else{
+								 console.log("邮箱已发送过");
+							 }
+						 },
+						 error:function(error){
+							 console.log(error);
+						 }
+					 })
+					 // sendEmail(email,result.name,result.nameList[0]);
+				 }
+			 },
+			 error:function(error){
+				 console.log(error);
+			 }
+		 })
+	 }
    function sendLowPriceEmail(){
 		 	var query = new AV.Query('Attention');
 			query.find().then(function(results) {
@@ -509,7 +586,7 @@ function getUrlData(url,charset,callback){
 			  // 处理返回的结果数据
 			  for (var i = 0; i < results.length; i++) {
 			    var object = results[i];
-			    console.log(object);
+			    // console.log(object);
 					getBJId(object.attributes.name,{
 						success:function(result){
 							var bid = result.attributes.bid;
@@ -517,35 +594,38 @@ function getUrlData(url,charset,callback){
 							var date = new Date().getTime();
 							date = formatDate("y-m-d",date);
 							console.log("date:"+date+" "+"bid:"+bid);
-							getPriceFromBJData(bid,'4838',date,{
-								success:function(result){
-									console.log(result);
-									var minPrice = result.price;
-									console.log(minPrice);
-									if(minPrice <= price){
-										var email = object.attributes.email;
-										ifSendEmail(email,result.name,minPrice,date,{
-											success:function(successLog){
-												console.log(successLog.code);
-												// sendEmail(email,result.name,result.nameList[0]);
-												if(successLog.code){
-													console.log("发送邮件");
-													sendEmail(email,result.name,result.nameList[0]);
-												}else{
-													console.log("邮箱已发送过");
+							// return;
+							if(bid){
+								getPriceFromBJData(bid,'4838',date,{
+									success:function(result){
+										console.log(result);
+										var minPrice = result.price;
+										console.log(minPrice);
+										if(minPrice <= price){
+											var email = object.attributes.email;
+											ifSendEmail(email,result.name,minPrice,date,{
+												success:function(successLog){
+													console.log(successLog.code);
+													// sendEmail(email,result.name,result.nameList[0]);
+													if(successLog.code){
+														console.log("发送邮件");
+														sendEmail(email,result.name,result.nameList[0]);
+													}else{
+														console.log("邮箱已发送过");
+													}
+												},
+												error:function(error){
+													console.log(error);
 												}
-											},
-											error:function(error){
-												console.log(error);
-											}
-										})
-										// sendEmail(email,result.name,result.nameList[0]);
+											})
+											// sendEmail(email,result.name,result.nameList[0]);
+										}
+									},
+									error:function(error){
+										console.log(error);
 									}
-								},
-								error:function(error){
-									console.log(error);
-								}
-							})
+								})
+							}
 							console.log(result.attributes.bid);
 							// getPriceFromBJData('326929','4838','2016-03-28');
 						},
@@ -727,7 +807,17 @@ function getTBPriceData(callback){
 			// data = JSON.stringify(data);
 			// data = JSON.parse(data);
 			data = eval("data="+data);
-			// console.log(data.movies);
+			if(type == "NMYL"){
+				var movieData = [];
+				for(var i = 0; i < data.movies.length;i++){
+					movieData[i] = {
+						"name":data.movies[i].name,
+						"releaseDate":data.movies[i].releaseDate
+					}
+				}
+				callback.success(movieData);
+				return;
+			}
 			for(var i = 0; i < data.movies.length;i++){
 				if(data.movies[i].movieId == mid){
 					console.log(data.movies[i].name);
@@ -760,6 +850,105 @@ function getTBPriceData(callback){
 	 });
  }
 
+function saveYLMovie(data,callback){
+	var query = new AV.Query('Movies');
+	query.equalTo('name', data.name);
+	query.find().then(function(results) {
+		console.log('Successfully retrieved ' + results.length + ' posts.');
+		// 处理返回的结果数据
+		for (var j = 0; j < results.length; j++) {
+			var object = results[j];
+			console.log(data.releaseDate);
+			// return;
+			if(j == 0){
+				// 这个 id 是要修改条目的 objectId，你在生成这个实例并成功保存时可以获取到，请看前面的文档
+				query.get(object.id).then(function(post) {
+					// 成功，回调中可以取得这个 Post 对象的一个实例，然后就可以修改它了
+					post.set('add', 'YL');
+					post.set('releaseDate', data.releaseDate);
+					post.save().then(function() {
+						// 保存成功
+						console.log("更新成功");
+					}, function(error) {
+						// 失败
+						console.log("更新失败");
+					});
+				}, function(error) {
+					// 失败了
+				});
+			}else{
+				query.get(object.id).then(function(post) {
+					// 成功，回调中可以取得这个 Post 对象的一个实例，然后就可以修改它了
+					post.destroy().then(function() {
+					  // 删除成功
+					  console.log("删除成功");
+					}, function(error) {
+					  // 失败
+					  console.log("删除失败");
+					});
+				}, function(error) {
+					// 失败了
+				});
+			}
+		}
+	}, function(error) {
+		console.log('Error: ' + error.code + ' ' + error.message);
+	});
+}
+function getNMNewMovie(){
+	getMovieIngData("","NMYL",{
+		success:function(data){
+			console.log(data);
+			for(var i = 0; i < data.length; i++){
+				console.log(data[i].name);
+				var name = data[i].name;
+				var releaseDate = formatDate("y-m-d",data[i].releaseDate);
+				// return;
+				var YLData = {
+					"name":name,
+					"releaseDate":releaseDate
+				}
+				saveYLMovie(YLData,{
+					success:function(){
+
+					},
+					error:function(){
+
+					}
+				})
+			}
+		},
+		error:function(error){
+			console.log(error);
+		}
+	});
+}
+// getMovieIngData("","NMYL",{
+// 	success:function(data){
+// 		console.log(data);
+// 		for(var i = 0; i < data.length; i++){
+// 			console.log(data[i].name);
+// 			var name = data[i].name;
+// 			var releaseDate = formatDate("y-m-d",data[i].releaseDate);
+// 			// return;
+// 			var YLData = {
+// 				"name":name,
+// 				"releaseDate":releaseDate
+// 			}
+// 			saveYLMovie(YLData,{
+// 				success:function(){
+//
+// 				},
+// 				error:function(){
+//
+// 				}
+// 			})
+// 		}
+// 	},
+// 	error:function(error){
+// 		console.log(error);
+// 	}
+// });
  function getPriceFromNM(mid){
 	 var cinemaid = '2a70b03e63fdb05e774ff173';
 	 var mid = mid;
@@ -935,7 +1124,7 @@ function moviesDelete(){
 	});
 
 	var rule2 = new schedule.RecurrenceRule();
-	rule2.hour =0;rule2.minute =2;rule2.second =0;
+	rule2.hour =0;rule2.minute =0;rule2.second =20;
 
 	//处理要做的事情
 	 var k = schedule.scheduleJob(rule2, function(){
@@ -944,7 +1133,7 @@ function moviesDelete(){
 			 // getBJMovies();
 	 });
 	 var rule3 = new schedule.RecurrenceRule();
-	 rule3.hour =0;rule3.minute =4;rule3.second =0;
+	 rule3.hour =0;rule3.minute =0;rule3.second =40;
 
 	//处理要做的事情
 	 var l = schedule.scheduleJob(rule3, function(){
@@ -955,12 +1144,24 @@ function moviesDelete(){
 	// getMoviesData();
 	// getBJMovies();
 
+	var rule4 = new schedule.RecurrenceRule();
+	rule4.hour =0;rule4.minute =1;rule4.second =0;
+
+ //处理要做的事情
+	var m = schedule.scheduleJob(rule4, function(){
+			// console.log('我在这里处理了某些事情...');
+			// getBJMovies();
+			getNMNewMovie();
+	});
+
 	 var sendRule = new schedule.RecurrenceRule();
-　　var times = [0,30];
+　　var times = [2,4,7,10,12,14,17,22,23];
 // 　　for(var i=1; i<60; i++){
 // 　　　　times.push(i);
 // 　　}
-　　sendRule.minute = times;
+　　sendRule.hour = times;
+		sendRule.minute =0;
+		sendRule.second =0;
 　　var c=0;
 　　var j = schedule.scheduleJob(sendRule, function(){
      　 c++;
@@ -1076,23 +1277,23 @@ app.get('/detail/:id', function(req, res) {
 								getAttention(email,movieDetail.name,{
 									success:function(attention){
 										console.log("attention:"+attention);
-										res.render('detail', {movieDetail:movieDetail,id:id,poster:poster,attention:attention});
+										res.render('detail', {movieDetail:movieDetail,id:id,poster:poster,attention:attention,email:email});
 									},
 									error:function(error){
 										console.log(error);
 									}
 								});
 							}else{
-								res.render('detail', {movieDetail:movieDetail,id:id,poster:poster,attention:0});
+								res.render('detail', {movieDetail:movieDetail,id:id,poster:poster,attention:0,email:email});
 							}
 						},
 						error:function(error){
 							console.log(error);
-							res.render('detail', {movieDetail:'',id:'',poster:'',attention:0});
+							res.render('detail', {movieDetail:'',id:'',poster:'',attention:0,email:email});
 						}
 					})
 		}else{
-			res.render('detail', {movieDetail:"",id:'',poster:'',attention:0});
+			res.render('detail', {movieDetail:"",id:'',poster:'',attention:0,email:email});
 		}
 	}, function(error) {
 	  console.log('Error: ' + error.code + ' ' + error.message);
@@ -1264,7 +1465,7 @@ app.get('/movie', function(req, res) {
 
 	var query = new AV.Query('Movies');
 	query.notEqualTo('mid', null);
-	query.addDescending('star');
+	query.addDescending('releaseDate');
 	query.find().then(function(results) {
 		// 处理返回的结果数据
 		// console.log(results);
