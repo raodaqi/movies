@@ -453,7 +453,7 @@
 			</div>
 			<div class="collect-title">关注</div>
 			<div class="announce-content">
-			<div class="collect">
+			<div class="collect" data-email="<%= email%>">
 				<div class="collect-content">
 					<div class="well-hide">彩蛋</div>
 					<% for(var i = 0; i < attentionData.length ;i++ ){ %>
@@ -521,6 +521,13 @@
 		$(".watched-title").hide();
 		$(".well-received").hide();
 		$(".well-received-title").hide();
+		var email = $(".collect").attr("data-email");
+		console.log(email);
+		// alert(email);
+		if(email == null)
+		{
+			window.location.href="/signin";
+		}
 	})
 	$(".movies").click(function(){
 		var mid=$(this).attr("data-mid");

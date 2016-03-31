@@ -156,9 +156,9 @@
 		</a>
 		<div class="title-name" data-name="<%= movieDetail.name %>">
 			<%= movieDetail.name %></div>
-		<a class="title-caidan" >
+		<a class="title-caidan">
 			<% if(!attention) { %>
-				<div class="iconfont icon-shoucang save" data-attention="<%= attention %>"></div>
+				<div class="iconfont icon-shoucang save" data-attention="<%= attention %>" data-email="<%= email%>"></div>
 				<div class="iconfont icon-shoucang1 saved" style="display:none"></div>
 			<% }else{ %>
 				<div class="iconfont icon-shoucang1 saved" data-attention="<%= attention %>"></div>
@@ -280,15 +280,20 @@
 		          }
         })
 		$(".save").click(function(){
+			var email = $(this).attr("data-email");
+			console.log(email);
+			// alert(email);
 			var attention = $(this).attr("data-attention");
 			console.log(attention);
 			// alert(attention);
+			if(email != null){
 			if(attention == 1){
 				$(".saved").show();
 				$(".save").hide();
 			}
+			}
 			else{
-				// window.location.href="/signin";
+				window.location.href="/signin";
 			}
 			$('.ui-actionsheet').addClass('show');
 		})
