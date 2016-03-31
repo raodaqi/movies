@@ -346,7 +346,7 @@ function getUrlData(url,charset,callback){
  		 console.log(BJData);
 		 var minData = BJData.filmsession_list[0];
 		 priceData.name = BJData.movie.title;
-		 if(BJData.filmsession_list[0]){
+		 if(BJData.filmsession_list.length){
 			 var minPrice = BJData.filmsession_list[0]['min_price'];
 			 for(var i = 0; i < BJData.filmsession_list.length;i++){
 				 if(minPrice > BJData.filmsession_list[i]['min_price']){
@@ -391,11 +391,11 @@ function getUrlData(url,charset,callback){
  	 }
   });
  }
- getPriceFromBJData('326929','4838','2016-03-31',{
-  success:function(result){
- 	 console.log(result);
-  }
- });
+ // getPriceFromBJData('326929','4838','2016-03-31',{
+ //  success:function(result){
+ // 	 console.log(result);
+ //  }
+ // });
  /*********************************爬取正在上映的电影**********************************/
   function getMoviePage1FromBJData(){
   	AV.Cloud.httpRequest({
@@ -551,7 +551,7 @@ function getUrlData(url,charset,callback){
 	 function sendEmailContent(data,i){
 		 getPriceFromBJData(bid,'4838',date,{
 			 success:function(result){
-				 console.log(result);
+				//  console.log(result);
 				 var minPrice = result.price;
 				 console.log(minPrice);
 				 if(minPrice <= price){
@@ -1095,7 +1095,7 @@ function sendEmail(to,movie,platform){
 // getMoviesData();
 function getBJMovies(){
 	getMoviePage1FromBJData();
-	getMoviePage2FromBJData();
+	// getMoviePage2FromBJData();
 	// getMoviePage3FromBJData();
 }
 // getBJMovies();
@@ -1155,7 +1155,7 @@ function moviesDelete(){
 	});
 
 	 var sendRule = new schedule.RecurrenceRule();
-　　var times = [2,4,7,10,12,14,17,22,23];
+　　var times = [7,10,12,14,16,18,20,21];
 // 　　for(var i=1; i<60; i++){
 // 　　　　times.push(i);
 // 　　}
