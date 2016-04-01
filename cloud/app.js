@@ -513,7 +513,6 @@ function getUrlData(url,charset,callback){
     });
    }
 
-
    /************************************通知*****************************************************/
 	 function formatDate (format,timestamp,full) {
         format = format.toLowerCase();
@@ -579,6 +578,61 @@ function getUrlData(url,charset,callback){
 			 }
 		 })
 	 }
+	//  sendLowPriceEmail();
+	 function sendEmailContent(object){
+		 getBJId(object.attributes.name,{
+			 success:function(result){
+				 var bid = result.attributes.bid;
+				 var price = object.attributes.price;
+				 var name = object.attributes.name;
+				 var date = new Date().getTime();
+				 date = formatDate("y-m-d",date);
+				 console.log("name:"+name+" "+"bid:"+bid+" "+"price:"+price);
+				//  return;
+				 if(bid){
+					 getPriceFromBJData(bid,'4838',date,{
+						 success:function(result){
+							 console.log(result);
+							 var minPrice = result.price;
+							 if(!minPrice){
+								 minPrice = 70;
+							 }
+							 console.log(minPrice);
+							 if(minPrice <= price){
+								 var email = object.attributes.email;
+								 ifSendEmail(email,result.name,minPrice,date,{
+									 success:function(successLog){
+										 console.log(successLog.code);
+										 // sendEmail(email,result.name,result.nameList[0]);
+										 if(successLog.code){
+											 console.log("发送邮件");
+											 sendEmail(email,result.name,result.nameList[0]);
+										 }else{
+											 console.log("邮箱已发送过");
+										 }
+									 },
+									 error:function(error){
+										 console.log(error);
+									 }
+								 })
+								 // sendEmail(email,result.name,result.nameList[0]);
+							 }
+						 },
+						 error:function(error){
+							 console.log("失败2");
+							 sendLowPriceEmail();
+						 }
+					 })
+				 }
+				 console.log(result.attributes.bid);
+				 // getPriceFromBJData('326929','4838','2016-03-28');
+			 },
+			 error:function(error){
+				 console.log("失败1");
+				 sendLowPriceEmail();
+			 }
+		 });
+	 }
    function sendLowPriceEmail(){
 		 	var query = new AV.Query('Attention');
 			query.find().then(function(results) {
@@ -587,52 +641,55 @@ function getUrlData(url,charset,callback){
 			  for (var i = 0; i < results.length; i++) {
 			    var object = results[i];
 			    // console.log(object);
-					getBJId(object.attributes.name,{
-						success:function(result){
-							var bid = result.attributes.bid;
-							var price = object.attributes.price;
-							var date = new Date().getTime();
-							date = formatDate("y-m-d",date);
-							console.log("date:"+date+" "+"bid:"+bid);
-							// return;
-							if(bid){
-								getPriceFromBJData(bid,'4838',date,{
-									success:function(result){
-										console.log(result);
-										var minPrice = result.price;
-										console.log(minPrice);
-										if(minPrice <= price){
-											var email = object.attributes.email;
-											ifSendEmail(email,result.name,minPrice,date,{
-												success:function(successLog){
-													console.log(successLog.code);
-													// sendEmail(email,result.name,result.nameList[0]);
-													if(successLog.code){
-														console.log("发送邮件");
-														sendEmail(email,result.name,result.nameList[0]);
-													}else{
-														console.log("邮箱已发送过");
-													}
-												},
-												error:function(error){
-													console.log(error);
-												}
-											})
-											// sendEmail(email,result.name,result.nameList[0]);
-										}
-									},
-									error:function(error){
-										console.log(error);
-									}
-								})
-							}
-							console.log(result.attributes.bid);
-							// getPriceFromBJData('326929','4838','2016-03-28');
-						},
-						error:function(error){
-							console.log(error);
-						}
-					});
+			    sendEmailContent(object);
+					// return ;
+					// continue;
+					// getBJId(object.attributes.name,{
+					// 	success:function(result){
+					// 		var bid = result.attributes.bid;
+					// 		var price = object.attributes.price;
+					// 		var date = new Date().getTime();
+					// 		date = formatDate("y-m-d",date);
+					// 		console.log("date:"+date+" "+"bid:"+bid+" "+"price:"+price);
+					// 		return;
+					// 		if(bid){
+					// 			getPriceFromBJData(bid,'4838',date,{
+					// 				success:function(result){
+					// 					console.log(result);
+					// 					var minPrice = result.price;
+					// 					console.log(minPrice);
+					// 					if(minPrice <= price){
+					// 						var email = object.attributes.email;
+					// 						ifSendEmail(email,result.name,minPrice,date,{
+					// 							success:function(successLog){
+					// 								console.log(successLog.code);
+					// 								// sendEmail(email,result.name,result.nameList[0]);
+					// 								if(successLog.code){
+					// 									console.log("发送邮件");
+					// 									sendEmail(email,result.name,result.nameList[0]);
+					// 								}else{
+					// 									console.log("邮箱已发送过");
+					// 								}
+					// 							},
+					// 							error:function(error){
+					// 								console.log(error);
+					// 							}
+					// 						})
+					// 						// sendEmail(email,result.name,result.nameList[0]);
+					// 					}
+					// 				},
+					// 				error:function(error){
+					// 					console.log(error);
+					// 				}
+					// 			})
+					// 		}
+					// 		console.log(result.attributes.bid);
+					// 		// getPriceFromBJData('326929','4838','2016-03-28');
+					// 	},
+					// 	error:function(error){
+					// 		console.log(error);
+					// 	}
+					// });
 			  }
 			}, function(error) {
 			  console.log('Error: ' + error.code + ' ' + error.message);
@@ -1124,7 +1181,7 @@ function moviesDelete(){
 	});
 
 	var rule2 = new schedule.RecurrenceRule();
-	rule2.hour =0;rule2.minute =0;rule2.second =20;
+	rule2.hour =0;rule2.minute =0;rule2.second =30;
 
 	//处理要做的事情
 	 var k = schedule.scheduleJob(rule2, function(){
@@ -1133,7 +1190,7 @@ function moviesDelete(){
 			 // getBJMovies();
 	 });
 	 var rule3 = new schedule.RecurrenceRule();
-	 rule3.hour =0;rule3.minute =0;rule3.second =40;
+	 rule3.hour =0;rule3.minute =1;rule3.second =0;
 
 	//处理要做的事情
 	 var l = schedule.scheduleJob(rule3, function(){
@@ -1145,7 +1202,7 @@ function moviesDelete(){
 	// getBJMovies();
 
 	var rule4 = new schedule.RecurrenceRule();
-	rule4.hour =0;rule4.minute =1;rule4.second =0;
+	rule4.hour =0;rule4.minute =2;rule4.second =0;
 
  //处理要做的事情
 	var m = schedule.scheduleJob(rule4, function(){
@@ -1155,7 +1212,7 @@ function moviesDelete(){
 	});
 
 	 var sendRule = new schedule.RecurrenceRule();
-　　var times = [7,10,12,14,16,18,20,21];
+　　var times = [2,4,7,10,12,14,16,18,20,21];
 // 　　for(var i=1; i<60; i++){
 // 　　　　times.push(i);
 // 　　}
