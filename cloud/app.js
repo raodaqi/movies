@@ -543,7 +543,7 @@ function getUrlData(url,charset,callback){
 			 callback.success(results);
 		 }, function(error) {
 			 console.log('Error: ' + error.code + ' ' + error.message);
-			 callback.error(results);
+			 callback.error(error);
 		 });
 	 }
 	//  sendLowPriceEmail();
@@ -580,6 +580,9 @@ function getUrlData(url,charset,callback){
 	 }
 	//  sendLowPriceEmail();
 	 function sendEmailContent(object){
+		 if(!object.attributes.name){
+			 return;
+		 }
 		 getBJId(object.attributes.name,{
 			 success:function(result){
 				 var bid = result.attributes.bid;
@@ -1213,7 +1216,7 @@ function moviesDelete(){
 	// getNMNewMovie();
 
 	 var sendRule = new schedule.RecurrenceRule();
-　　var times = [2,4,7,10,12,14,16,18,20,21];
+　　var times = [7,10,12,14,16,18,20,21];
 // 　　for(var i=1; i<60; i++){
 // 　　　　times.push(i);
 // 　　}
