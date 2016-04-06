@@ -1476,6 +1476,16 @@ app.get('/test', function(req, res) {
 });
 
 app.get('/weather', function(req, res) {
+ // AV.Cloud.httpRequest({
+ //  method: 'GET',
+ //  url: 'http://api.map.baidu.com/telematics/v3/weather?location=%E5%8C%97%E4%BA%AC&output=json&ak=rcGjGyXAujFGgLOrBFSn8aUiTnpyFN5L',
+ //  success: function(httpResponse) {
+ // 	 console.log(httpResponse);
+ //  },
+ //  error:function(error){
+ // 	 console.log(error);
+ //  }
+ // });
   res.render('weather', {});
 });
 

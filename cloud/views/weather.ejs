@@ -19,11 +19,11 @@ var data = {
 }
 	$.ajax({
 			type : "GET",
-			dataType: "json",
+			dataType: "jsonp",
 			data : data,
 			url : "http://api.map.baidu.com/telematics/v3/weather?location=%E5%8C%97%E4%BA%AC&output=json&ak=rcGjGyXAujFGgLOrBFSn8aUiTnpyFN5L",
 			success : function(result){
-				console.log("success");
+				console.log(result);
 				alert("success");
 				},
 			error: function(error){
