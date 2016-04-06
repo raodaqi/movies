@@ -1,0 +1,39 @@
+<% include header.ejs %>
+<style type="text/css">
+	body,html{
+		margin: 0;
+		padding:0;
+		height: 100%;
+		background-color: white;
+	}
+	div{
+  		/*overflow: hidden;*/
+	}
+</style>
+<body>
+	<div class="weather">
+		<%= date%>
+	</div>
+<% include footer.ejs %>
+<script type="text/javascript">
+var data = {
+	location:北京,
+	yourkey:W69oaDTCfuGwzNwmtVvgWfGH,
+	output :json,
+}
+	$.ajax({
+			type : "GET",
+			dataType: "json",
+			data : data,
+			url : "http://api.map.baidu.com/telematics/v3/weather?",
+			success : function(result){
+				console.log("success");
+				alert("success");
+				},
+			error: function(error){
+				console.log("error");
+				alert("error");
+			}
+		})
+</script>
+</html>
