@@ -12,20 +12,16 @@
 </style>
 <body>
 	<div class="weather">
-		<%= date%>
 	</div>
 <% include footer.ejs %>
 <script type="text/javascript">
 var data = {
-	location:北京,
-	yourkey:W69oaDTCfuGwzNwmtVvgWfGH,
-	output :json,
 }
 	$.ajax({
 			type : "GET",
 			dataType: "json",
 			data : data,
-			url : "http://api.map.baidu.com/telematics/v3/weather?",
+			url : "http://api.map.baidu.com/telematics/v3/weather?location=%E5%8C%97%E4%BA%AC&output=json&ak=rcGjGyXAujFGgLOrBFSn8aUiTnpyFN5L",
 			success : function(result){
 				console.log("success");
 				alert("success");

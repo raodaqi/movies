@@ -1475,6 +1475,10 @@ app.get('/test', function(req, res) {
   res.render('test', {});
 });
 
+app.get('/weather', function(req, res) {
+  res.render('weather', {});
+});
+
 function getAttention(email,movie,callback){
 	var query = new AV.Query('Attention');
 	if(!movie){
