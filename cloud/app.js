@@ -1489,6 +1489,20 @@ app.get('/weather', function(req, res) {
   res.render('weather', {});
 });
 
+// app.get('/weatherList', function(req, res) {
+//  AV.Cloud.httpRequest({
+//   method: 'GET',
+//   url: 'http://api.map.baidu.com/telematics/v3/weather?location=%E5%8C%97%E4%BA%AC&output=json&ak=rcGjGyXAujFGgLOrBFSn8aUiTnpyFN5L',
+//   success: function(httpResponse) {
+//  	 console.log(httpResponse);
+// 	 res.send()
+//   },
+//   error:function(error){
+//  	 console.log(error);
+//   }
+//  });
+// });
+
 function getAttention(email,movie,callback){
 	var query = new AV.Query('Attention');
 	if(!movie){
@@ -1585,6 +1599,66 @@ app.get('/movie', function(req, res) {
 	}, function(error) {
 		console.log('Error: ' + error.code + ' ' + error.message);
 		res.render('movie', {results:error,attentionData:'',email:""});
+	});
+  // res.render('movie', {});
+});
+
+
+app.get('/movieList', function(req, res) {
+	var currentUser = AV.User.current();
+	if(currentUser){
+		var email = currentUser.attributes.email;
+	}else{
+		var email = '';
+	}
+
+	var query = new AV.Query('Movies');
+	query.notEqualTo('mid', null);
+	query.addDescending('releaseDate');
+	query.find().then(function(results) {
+		// 处理返回的结果数据
+		// console.log(results);
+		// res.render('movie', {results:results});
+		if(email){
+			getAttention(email,"",{
+				success:function(attention){
+					// console.log(results.length);
+					// console.log(attention);
+					var attentionData = [];
+					for(var i = 0; i < results.length; i++){
+						// console.log(results[i].attributes.name+":"+results[i].attributes.name.length);
+						// console.log(results[i].attributes.name.length);
+						for(var j = 0; j < attention.length; j++){
+							// console.log(attention[j].name);
+							// console.log(attention[j].name+":"+attention[j].name.length);
+
+							// 数据库输入的数据存在空格，这里是出去字符串中的空格
+							if(attention[j].name.replace(/\s+/g,"") == results[i].attributes.name.replace(/\s+/g,"")){
+								console.log(attention[j].name);
+								attentionData[j] = {
+									"name":results[i].attributes.name,
+									"mid":results[i].attributes.mid,
+									"type":results[i].attributes.type,
+									"img":results[i].attributes.img,
+									"star":results[i].attributes.star,
+									"releaseDate":results[i].attributes.releaseDate
+								}
+							}
+						}
+					}
+					console.log(attentionData);
+					res.send({results:results,attentionData:attentionData,email:email});
+				},
+				error:function(error){
+					console.log(error);
+				}
+			});
+		}else{
+			res.send({results:results,attentionData:'',email:""});
+		}
+	}, function(error) {
+		console.log('Error: ' + error.code + ' ' + error.message);
+		res.send({results:error,attentionData:'',email:""});
 	});
   // res.render('movie', {});
 });
