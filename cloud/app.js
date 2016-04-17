@@ -1162,7 +1162,7 @@ function getBJMovies(){
 //清空movies里的所有数据
 function moviesDelete(){
 	var query = new AV.Query('Movies');
-	query.destroyAll(result).then(function() {
+	query.destroyAll().then(function(result) {
 	  // 删除成功
 	  console.log(result);
 	}, function() {
@@ -1170,6 +1170,7 @@ function moviesDelete(){
 	});
 }
 // moviesDelete();
+
 
 //初始化并设置定时任务的时间
  var rule = new schedule.RecurrenceRule();
@@ -1382,7 +1383,6 @@ app.post('/attention', function(req, res) {
 	var price = req.body.price;
 	var currentUser = AV.User.current();
 	var post = AV.Object.new('Attention');
-
 	// return;
 	if(currentUser){
 		var email = currentUser.attributes.email;
@@ -1551,9 +1551,9 @@ app.get('/movie', function(req, res) {
 	}else{
 		var email = '';
 	}
-
 	var query = new AV.Query('Movies');
 	query.notEqualTo('mid', null);
+	// query.equalTo('add', 'YL');
 	query.addDescending('releaseDate');
 	query.find().then(function(results) {
 		// 处理返回的结果数据
@@ -1574,15 +1574,21 @@ app.get('/movie', function(req, res) {
 
 							// 数据库输入的数据存在空格，这里是出去字符串中的空格
 							if(attention[j].name.replace(/\s+/g,"") == results[i].attributes.name.replace(/\s+/g,"")){
-								console.log(attention[j].name);
-								attentionData[j] = {
-									"name":results[i].attributes.name,
-									"mid":results[i].attributes.mid,
-									"type":results[i].attributes.type,
-									"img":results[i].attributes.img,
-									"star":results[i].attributes.star,
-									"releaseDate":results[i].attributes.releaseDate
+								console.log(attention[j].name.length);
+								console.log(results[i].attributes.mid);
+								if(results[i].attributes.mid == undefined  || results[i].attributes.mid=="undefined"){
+									
+								}else{
+									attentionData[j] = {
+										"name":results[i].attributes.name,
+										"mid":results[i].attributes.mid,
+										"type":results[i].attributes.type,
+										"img":results[i].attributes.img,
+										"star":results[i].attributes.star,
+										"releaseDate":results[i].attributes.releaseDate
+									}
 								}
+								
 							}
 						}
 					}
@@ -1594,11 +1600,11 @@ app.get('/movie', function(req, res) {
 				}
 			});
 		}else{
-			res.render('movie', {results:results,attentionData:'',email:""});
+			res.render('movie', {results:results,attentionData:'1',email:""});
 		}
 	}, function(error) {
 		console.log('Error: ' + error.code + ' ' + error.message);
-		res.render('movie', {results:error,attentionData:'',email:""});
+		res.render('movie', {results:error,attentionData:'1',email:""});
 	});
   // res.render('movie', {});
 });

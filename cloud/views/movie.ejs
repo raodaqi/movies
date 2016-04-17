@@ -462,17 +462,19 @@
 				<div class="collect-content">
 					<div class="well-hide">彩蛋</div>
 					<% for(var i = 0; i < attentionData.length ;i++ ){ %>
-					<div class="collect-movies">
-						<div class="well-received-movies-page">
-							<div class="collect-movies-photo">
-								<a class="movies" data-mid="<%=attentionData[i].mid%>">
-									<img src="<%=attentionData[i].img%>"></a>
+						<%if(attentionData[i]){%>
+							<div class="collect-movies">
+								<div class="well-received-movies-page">
+									<div class="collect-movies-photo">
+										<a class="movies" data-mid="<%=attentionData[i].mid%>">
+											<img src="<%=attentionData[i].img%>"></a>
+									</div>
+									<div class="collect-movies-name">
+										<%=attentionData[i].name%></div>
+								</div>
 							</div>
-							<div class="collect-movies-name">
-								<%=attentionData[i].name%></div>
-						</div>
-					</div>
-					<%}%>
+						<% } %>
+					<% } %>
 					</div>
 			</div>
 		</div>
