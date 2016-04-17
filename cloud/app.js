@@ -1576,9 +1576,6 @@ app.get('/movie', function(req, res) {
 							if(attention[j].name.replace(/\s+/g,"") == results[i].attributes.name.replace(/\s+/g,"")){
 								console.log(attention[j].name.length);
 								console.log(results[i].attributes.mid);
-								if(results[i].attributes.mid == undefined  || results[i].attributes.mid=="undefined"){
-									
-								}else{
 									attentionData[j] = {
 										"name":results[i].attributes.name,
 										"mid":results[i].attributes.mid,
@@ -1587,7 +1584,6 @@ app.get('/movie', function(req, res) {
 										"star":results[i].attributes.star,
 										"releaseDate":results[i].attributes.releaseDate
 									}
-								}
 								
 							}
 						}
