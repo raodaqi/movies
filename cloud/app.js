@@ -1172,26 +1172,7 @@ function moviesDelete(){
 // moviesDelete();
 
 
-//定时的云引擎函数
-AV.Cloud.define("moviesDelete", function(request, response) {
-  moviesDelete();
-  response.success("清空movies里的所有数据");
-});
 
-AV.Cloud.define("getMoviesData", function(request, response) {
-  getMoviesData();
-  response.success("清空movies里的所有数据");
-});
-
-AV.Cloud.define("getBJMovies", function(request, response) {
-  getBJMovies();
-  response.success("清空movies里的所有数据");
-});
-
-AV.Cloud.define("getNMNewMovie", function(request, response) {
-  getNMNewMovie();
-  response.success("清空movies里的所有数据");
-});
 
 //初始化并设置定时任务的时间
 //  var rule = new schedule.RecurrenceRule();
@@ -1684,6 +1665,27 @@ app.get('/movieList', function(req, res) {
 		res.send({results:error,attentionData:'',email:""});
 	});
   // res.render('movie', {});
+});
+
+//定时的云引擎函数
+AV.Cloud.define("moviesDelete", function(request, response) {
+  moviesDelete();
+  response.success("清空movies里的所有数据");
+});
+
+AV.Cloud.define("getMoviesData", function(request, response) {
+  getMoviesData();
+  response.success("获取电影列表");
+});
+
+AV.Cloud.define("getBJMovies", function(request, response) {
+  getBJMovies();
+  response.success("获取比价网电影列表");
+});
+
+AV.Cloud.define("getNMNewMovie", function(request, response) {
+  getNMNewMovie();
+  response.success("获取百度糯米正在上映电影");
 });
 
 // 最后，必须有这行代码来使 express 响应 HTTP 请求
