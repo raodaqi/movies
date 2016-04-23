@@ -1172,64 +1172,85 @@ function moviesDelete(){
 // moviesDelete();
 
 
+//定时的云引擎函数
+AV.Cloud.define("moviesDelete", function(request, response) {
+  moviesDelete();
+  response.success("清空movies里的所有数据");
+});
+
+AV.Cloud.define("getMoviesData", function(request, response) {
+  getMoviesData();
+  response.success("清空movies里的所有数据");
+});
+
+AV.Cloud.define("getBJMovies", function(request, response) {
+  getBJMovies();
+  response.success("清空movies里的所有数据");
+});
+
+AV.Cloud.define("getNMNewMovie", function(request, response) {
+  getNMNewMovie();
+  response.success("清空movies里的所有数据");
+});
+
 //初始化并设置定时任务的时间
- var rule = new schedule.RecurrenceRule();
- rule.hour =0;rule.minute =0;rule.second =0;
+//  var rule = new schedule.RecurrenceRule();
+//  rule.hour =0;rule.minute =0;rule.second =0;
 
-//处理要做的事情
-	var j = schedule.scheduleJob(rule, function(){
-	    // console.log('我在这里处理了某些事情...');
-	    moviesDelete();
-			// getMoviesData();
-			// getBJMovies();
-	});
+// //处理要做的事情
+// 	var j = schedule.scheduleJob(rule, function(){
+// 	    // console.log('我在这里处理了某些事情...');
+// 	    moviesDelete();
+// 			// getMoviesData();
+// 			// getBJMovies();
+// 	});
 
-	var rule2 = new schedule.RecurrenceRule();
-	rule2.hour =0;rule2.minute =0;rule2.second =30;
+// 	var rule2 = new schedule.RecurrenceRule();
+// 	rule2.hour =0;rule2.minute =0;rule2.second =30;
 
-	//处理要做的事情
-	 var k = schedule.scheduleJob(rule2, function(){
-			 // console.log('我在这里处理了某些事情...');
-			 getMoviesData();
-			 // getBJMovies();
-	 });
-	 var rule3 = new schedule.RecurrenceRule();
-	 rule3.hour =0;rule3.minute =1;rule3.second =0;
+// 	//处理要做的事情
+// 	 var k = schedule.scheduleJob(rule2, function(){
+// 			 // console.log('我在这里处理了某些事情...');
+// 			 getMoviesData();
+// 			 // getBJMovies();
+// 	 });
+// 	 var rule3 = new schedule.RecurrenceRule();
+// 	 rule3.hour =0;rule3.minute =1;rule3.second =0;
 
-	//处理要做的事情
-	 var l = schedule.scheduleJob(rule3, function(){
-			 // console.log('我在这里处理了某些事情...');
-			 // getBJMovies();
-			 getBJMovies();
-	 });
-	// getMoviesData();
-	// getBJMovies();
+// 	//处理要做的事情
+// 	 var l = schedule.scheduleJob(rule3, function(){
+// 			 // console.log('我在这里处理了某些事情...');
+// 			 // getBJMovies();
+// 			 getBJMovies();
+// 	 });
+// 	// getMoviesData();
+// 	// getBJMovies();
 
-	var rule4 = new schedule.RecurrenceRule();
-	rule4.hour =0;rule4.minute =2;rule4.second =0;
+// 	var rule4 = new schedule.RecurrenceRule();
+// 	rule4.hour =0;rule4.minute =2;rule4.second =0;
 
- //处理要做的事情
-	var m = schedule.scheduleJob(rule4, function(){
-			// console.log('我在这里处理了某些事情...');
-			// getBJMovies();
-			getNMNewMovie();
-	});
-	// getNMNewMovie();
+//  //处理要做的事情
+// 	var m = schedule.scheduleJob(rule4, function(){
+// 			// console.log('我在这里处理了某些事情...');
+// 			// getBJMovies();
+// 			getNMNewMovie();
+// 	});
+// 	// getNMNewMovie();
 
-	 var sendRule = new schedule.RecurrenceRule();
-　　var times = [7,10,12,14,16,18,20,21];
-// 　　for(var i=1; i<60; i++){
-// 　　　　times.push(i);
-// 　　}
-　　sendRule.hour = times;
-		sendRule.minute =0;
-		sendRule.second =0;
-　　var c=0;
-　　var j = schedule.scheduleJob(sendRule, function(){
-     　 c++;
-      　console.log(c);
-				sendLowPriceEmail();
-　　});
+// 	 var sendRule = new schedule.RecurrenceRule();
+// 　　var times = [7,10,12,14,16,18,20,21];
+// // 　　for(var i=1; i<60; i++){
+// // 　　　　times.push(i);
+// // 　　}
+// 　　sendRule.hour = times;
+// 		sendRule.minute =0;
+// 		sendRule.second =0;
+// 　　var c=0;
+// 　　var j = schedule.scheduleJob(sendRule, function(){
+//      　 c++;
+//       　console.log(c);
+// 				sendLowPriceEmail();
+// 　　});
 // sendLowPriceEmail();
 	 // getBJMovies();
 // getMovieDetailFromNM("9932");
