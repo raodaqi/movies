@@ -8,3 +8,23 @@ AV.Cloud.define("getData", function(request, response) {
   // appJs.getJWCImportentData();
   response.success("Log in timer.");
 });
+
+AV.Cloud.define("moviesDelete", function(request, response) {
+  appJs.appJs.moviesDelete();
+  response.success("清空movies里的所有数据");
+});
+
+AV.Cloud.define("getMoviesData", function(request, response) {
+  appJs.getMoviesData();
+  response.success("获取电影列表");
+});
+
+AV.Cloud.define("getBJMovies", function(request, response) {
+  appJs.getBJMovies();
+  response.success("获取比价网电影列表");
+});
+
+AV.Cloud.define("getNMNewMovie", function(request, response) {
+  appJs.getNMNewMovie();
+  response.success("获取百度糯米正在上映电影");
+});
