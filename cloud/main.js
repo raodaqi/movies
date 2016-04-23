@@ -10,7 +10,7 @@ AV.Cloud.define("getData", function(request, response) {
 });
 
 AV.Cloud.define("moviesDelete", function(request, response) {
-  appJs.appJs.moviesDelete();
+  appJs.moviesDelete();
   response.success("清空movies里的所有数据");
 });
 
@@ -27,4 +27,9 @@ AV.Cloud.define("getBJMovies", function(request, response) {
 AV.Cloud.define("getNMNewMovie", function(request, response) {
   appJs.getNMNewMovie();
   response.success("获取百度糯米正在上映电影");
+});
+
+AV.Cloud.define("sendLowPriceEmail", function(request, response) {
+  appJs.sendLowPriceEmail();
+  response.success("发送低价邮件");
 });
