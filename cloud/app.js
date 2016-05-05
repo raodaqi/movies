@@ -847,17 +847,17 @@ function getTBPriceData(callback){
 	//  getUrlData("http://m.dianying.baidu.com/info/cinema/detail?cinemaId=3185&sfrom=newnuomi&from=webapp&sub_channel=nuomi_wap_rukou5&source=nuomi&c=75&cc=&kehuduan=","UTF-8",{
 	// 	 success:function(result){
 	AV.Cloud.httpRequest({
-	  url: 'http://m.dianying.baidu.com/info/cinema/detail?cinemaId=3185&sfrom=newnuomi&from=webapp&sub_channel=nuomi_wap_rukou5&source=nuomi&c=75&cc=&kehuduan=',
+	  	url: 'https://mdianying.baidu.com/info/cinema/detail?cinemaId=3185',
 		headers: {
-			"Accept":"text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+		"Accept":"text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
 	    'User-Agent':'Mozilla/5.0 (iPhone; CPU iPhone OS 9_1 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13B143 Safari/601.1'
 	  },
 	  success: function(httpResponse) {
 			var result = httpResponse.text;
 			$ = cheerio.load(result);
 		 /*解析百度糯米正在上映和即将上演的电影*/
-		 console.log(result);
-		//  return;
+		 // console.log(httpResponse);
+		 // return;
 		//  console.log(result);
 			var data = {};
 			data = result.split("_MOVIE.data =")[1];
@@ -1683,7 +1683,7 @@ app.get('/movieList', function(req, res) {
  exports.sendLowPriceEmail = function(){
 	 sendLowPriceEmail();
  }
-
+getNMNewMovie();
 
 // 最后，必须有这行代码来使 express 响应 HTTP 请求
 app.listen();
