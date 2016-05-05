@@ -1683,7 +1683,7 @@ app.get('/movieList', function(req, res) {
  exports.sendLowPriceEmail = function(){
 	 sendLowPriceEmail();
  }
-getNMNewMovie();
+// getBJMovies();
 
 // 最后，必须有这行代码来使 express 响应 HTTP 请求
 app.listen();
