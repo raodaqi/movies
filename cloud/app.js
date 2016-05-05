@@ -1068,7 +1068,7 @@ function getMovieDetailFromNM(mid,callback){
 	var mid = mid;
 	AV.Cloud.httpRequest({
 	 method: 'GET',
-	 url: 'http://m.dianying.baidu.com/info/movie/detail?movie_id='+mid+'&sfrom=newnuomi&from=webapp&sub_channel=nuomi_wap_rukou5&source=nuomi&c=75&cc=&kehuduan=',
+	 url: 'https://mdianying.baidu.com/info/movie/detail?movie_id='+mid+'&sfrom=newnuomi&from=webapp&sub_channel=nuomi_wap_rukou5&source=nuomi&c=75&cc=&kehuduan=',
 	 success: function(httpResponse) {
 		 // console.log(httpResponse.text);
 		 var result = httpResponse.text;
