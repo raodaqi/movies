@@ -346,7 +346,8 @@ function getUrlData(url,charset,callback){
  function getMoviesData(){
   getUrlData("http://cd.nuomi.com/pcindex/main/filmlist?type=1","UTF-8",{
     success:function(result){
-      $ = cheerio.load(result);
+      console.log(result);
+      var $ = cheerio.load(result);
       /*解析百度糯米正在上映和即将上演的电影*/
       console.log("正在上映");
       $("#showing-movies-j .j-sliders .item").each(function(i, elem){
@@ -983,7 +984,7 @@ function getTBPriceData(callback){
     },
     success: function(httpResponse) {
       var result = httpResponse.text;
-      $ = cheerio.load(result);
+      var $ = cheerio.load(result);
      /*解析百度糯米正在上映和即将上演的电影*/
      // console.log(httpResponse);
      // return;
@@ -1152,7 +1153,7 @@ function getNMNewMovie(){
     success: function(httpResponse) {
       // console.log(httpResponse.text);
       var result = httpResponse.text;
-      $ = cheerio.load(result);
+      var $ = cheerio.load(result);
       var movieName = $(".content h2 a").text();
       console.log(movieName);
       /***********这里解析日期***********/
@@ -1201,7 +1202,7 @@ function getMovieDetailFromNM(mid,callback){
    success: function(httpResponse) {
      // console.log(httpResponse.text);
      var result = httpResponse.text;
-     $ = cheerio.load(result);
+     var $ = cheerio.load(result);
     //  console.log(result);
      /***********这里解析日期***********/
      var movieDetail = {};
@@ -1493,6 +1494,49 @@ app.get('/detail/:id', function(req, res) {
   });
 
 });
+
+app.get('/mdetail', function(req, res) {
+  var id =  req.query.id;
+  console.log(id);
+
+  console.log(id);
+  var query = new AV.Query('Movies');
+  query.equalTo('mid', id);
+  query.first().then(function(results) {
+    var poster = '';
+    if(results.attributes.poster){
+      poster = results.attributes.poster;
+    }else{
+      poster = results.attributes.img;
+    }
+    console.log(poster);
+    if(id){
+      // getMovieIngData(id,"",{
+      //  success:function(price){
+      //    console.log(price);
+          getMovieDetailFromNM(id,{
+            success:function(movieDetail){
+              // console.log(result);
+              // res.render('detail', {movieDetail:movieDetail,id:id,poster:poster});
+                res.send({movieDetail:movieDetail});
+            },
+            error:function(error){
+              console.log(error);
+              res.send({movieDetail:''});
+            }
+          })
+    }else{
+      res.render('detail', {movieDetail:""});
+    }
+  }, function(error) {
+    console.log('Error: ' + error.code + ' ' + error.message);
+  });
+
+});
+
+
+
+
 app.post('/price', function(req, res) {
   var id = req.body.id;
   console.log(id);
@@ -1795,7 +1839,10 @@ app.get('/movieList', function(req, res) {
   });
   // res.render('movie', {});
 });
-
+// moviesDelete();
+// getMoviesData();
+// getBJMovies();
+// getNMNewMovie();
 //定时的云引擎函数
  exports.moviesDelete = function(){
    moviesDelete();
