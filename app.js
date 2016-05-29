@@ -54,6 +54,45 @@ app.use(function(req, res, next) {
   d.run(next);
 });
 
+
+// 可以将一类的路由单独保存在一个文件中
+app.use('/todos', todos);
+
+// // 如果任何路由都没匹配到，则认为 404
+// // 生成一个异常让后面的 err handler 捕获
+// app.use(function(req, res, next) {
+//   var err = new Error('Not Found');
+//   err.status = 404;
+//   next(err);
+// });
+
+// // error handlers
+
+// // 如果是开发环境，则将异常堆栈输出到页面，方便开发调试
+// if (app.get('env') === 'development') {
+//   app.use(function(err, req, res, next) { // jshint ignore:line
+//     var statusCode = err.status || 500;
+//     if(statusCode === 500) {
+//       console.error(err.stack || err);
+//     }
+//     res.status(statusCode);
+//     res.render('error', {
+//       message: err.message || err,
+//       error: err
+//     });
+//   });
+// }
+
+// // 如果是非开发环境，则页面只输出简单的错误信息
+// app.use(function(err, req, res, next) { // jshint ignore:line
+//   res.status(err.status || 500);
+//   res.render('error', {
+//     message: err.message || err,
+//     error: {}
+//   });
+// });
+
+
 app.get('/', function(req, res) {
   // res.render('index', { currentTime: new Date() });
   var currentUser = AV.User.current();
@@ -100,18 +139,18 @@ app.get('/', function(req, res) {
             }
           }
           console.log(attentionData);
-          res.render('movie', {results:results,attentionData:attentionData,email:email});
+          res.render('index', {results:results,attentionData:attentionData,email:email});
         },
         error:function(error){
           console.log(error);
         }
       });
     }else{
-      res.render('movie', {results:results,attentionData:'1',email:""});
+      res.render('index', {results:results,attentionData:'1',email:""});
     }
   }, function(error) {
     console.log('Error: ' + error.code + ' ' + error.message);
-    res.render('movie', {results:error,attentionData:'1',email:""});
+    res.render('index', {results:error,attentionData:'1',email:""});
   });
 });
 
@@ -1342,7 +1381,7 @@ app.get('/announce', function(req, res) {
 app.get('/signin', function(req, res) {
   console.log(req.AV.user);
   if (req.AV.user) {
-        res.redirect('/movie');
+        res.redirect('/index');
     } else {
         res.render('signin');
     }
@@ -1774,41 +1813,5 @@ app.get('/movieList', function(req, res) {
    sendLowPriceEmail();
  }
 
-// 可以将一类的路由单独保存在一个文件中
-app.use('/todos', todos);
-
-// 如果任何路由都没匹配到，则认为 404
-// 生成一个异常让后面的 err handler 捕获
-app.use(function(req, res, next) {
-  var err = new Error('Not Found');
-  err.status = 404;
-  next(err);
-});
-
-// error handlers
-
-// 如果是开发环境，则将异常堆栈输出到页面，方便开发调试
-if (app.get('env') === 'development') {
-  app.use(function(err, req, res, next) { // jshint ignore:line
-    var statusCode = err.status || 500;
-    if(statusCode === 500) {
-      console.error(err.stack || err);
-    }
-    res.status(statusCode);
-    res.render('error', {
-      message: err.message || err,
-      error: err
-    });
-  });
-}
-
-// 如果是非开发环境，则页面只输出简单的错误信息
-app.use(function(err, req, res, next) { // jshint ignore:line
-  res.status(err.status || 500);
-  res.render('error', {
-    message: err.message || err,
-    error: {}
-  });
-});
 
 module.exports = app;
