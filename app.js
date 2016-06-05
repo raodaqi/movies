@@ -1497,6 +1497,7 @@ app.get('/detail/:id', function(req, res) {
 
 app.get('/mdetail', function(req, res) {
   var id =  req.query.id;
+  var bid =  req.query.bid;
   console.log(id);
 
   console.log(id);
@@ -1517,8 +1518,48 @@ app.get('/mdetail', function(req, res) {
           getMovieDetailFromNM(id,{
             success:function(movieDetail){
               // console.log(result);
-              // res.render('detail', {movieDetail:movieDetail,id:id,poster:poster});
-                res.send({movieDetail:movieDetail});
+              // res.render('detail', {movieDetail:movieDetail,id:id,poster:poster}); 
+              // res.send({movieDetail:movieDetail});
+              if(!bid){
+                // var result = {
+                //   code : 600,
+                //   message: "还未出来价格"
+                // }
+                // res.send(result);
+                res.send({movieDetail:movieDetail,list:''});
+              }else{
+                var date = new Date().getTime();
+                date = formatDate("y-m-d",date);
+                AV.Cloud.httpRequest({
+               //    url: 'http://www.xuerendianying.com/bijia_api/fs/filmsessionlist/?movie=326929&cinema=4838&date=2016-03-25',
+                 url: 'http://www.xuerendianying.com/bijia_api/fs/filmsessionlist/?movie='+bid+'&cinema=4838&date='+date,
+                 headers: {
+                 },
+                 success: function(httpResponse) {
+                   console.log("success");
+                  //  console.log(httpResponse.text);
+                   var BJData = eval("BJData="+httpResponse.text);
+                   var priceData = {};
+                   console.log(BJData);
+                   var minData = BJData.filmsession_list[0];
+                   priceData.name = BJData.movie.title;
+                    // var result = {
+                    //   code : 200,
+                    //   message: "",
+                    //   list:BJData.filmsession_list
+                    // }
+                    var list = BJData.filmsession_list
+                   res.send({movieDetail:movieDetail,list:list});
+                 },
+                 error:function(error){
+                    var result = {
+                      code : 700,
+                      message: ""
+                    }
+                    res.send(result);
+                 }
+               });
+              }
             },
             error:function(error){
               console.log(error);
