@@ -1989,7 +1989,7 @@ app.get('/movieList', function(req, res) {
 // getMoviesData();
 // getBJMovies();
 
-// getNMNewMovie();
+getNMNewMovie();
 //定时的云引擎函数
  exports.moviesDelete = function(){
    moviesDelete();
