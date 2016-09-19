@@ -19,6 +19,8 @@ var schedule = require("node-schedule");
 var http =  require('http');
 var cheerio = require('cheerio');
 var iconv = require('iconv-lite');
+var encoding = require('encoding');
+var Buffer = require('buffer').Buffer;
 //调用发送邮件功能
 var nodemailer = require("nodemailer");
 
@@ -1504,13 +1506,13 @@ app.get('/mdetail', function(req, res) {
   var query = new AV.Query('Movies');
   query.equalTo('mid', id);
   query.first().then(function(results) {
-    var poster = '';
-    if(results.attributes.poster){
-      poster = results.attributes.poster;
-    }else{
-      poster = results.attributes.img;
-    }
-    console.log(poster);
+    // var poster = '';
+    // if(results.attributes.poster){
+    //   poster = results.attributes.poster;
+    // }else{
+    //   poster = results.attributes.img;
+    // }
+    // console.log(poster);
     if(id){
       // getMovieIngData(id,"",{
       //  success:function(price){
@@ -1537,10 +1539,10 @@ app.get('/mdetail', function(req, res) {
                  },
                  success: function(httpResponse) {
                    console.log("success");
-                  //  console.log(httpResponse.text);
+                   console.log(httpResponse.text);
                    var BJData = eval("BJData="+httpResponse.text);
                    var priceData = {};
-                   console.log(BJData);
+                   // console.log(BJData);
                    var minData = BJData.filmsession_list[0];
                    priceData.name = BJData.movie.title;
                     // var result = {
@@ -1926,7 +1928,7 @@ app.get('/movie', function(req, res) {
   // res.render('movie', {});
 });
 
-
+//mocieList
 app.get('/movieList', function(req, res) {
   var currentUser = AV.User.current();
   if(currentUser){
@@ -1940,7 +1942,7 @@ app.get('/movieList', function(req, res) {
   query.addDescending('releaseDate');
   query.find().then(function(results) {
     // 处理返回的结果数据
-    // console.log(results);
+    console.log(results);
     // res.render('movie', {results:results});
     if(email){
       getAttention(email,"",{
@@ -1985,11 +1987,127 @@ app.get('/movieList', function(req, res) {
   });
   // res.render('movie', {});
 });
+
+  AV.Cloud.httpRequest({
+    url: 'http://jxgl.cuit.edu.cn/Jxgl/Xs/kXk.asp?Yc=Zs&UTp=Xs&Sp=pj',
+    headers: {
+      Cookie:'safedog-flow-item=4537954CB97EE7ED989C46F60C2C5768; ASPSESSIONIDSQRSAQCQ=HMPKCJHDIOBIJPHBPMHFKMGF; _gscu_1672982541=53297287wuv58v10; _gscs_1672982541=t6699707294mp2p20|pv:1; _gscbrs_1672982541=1; ASPSESSIONIDQSRTAQCQ=IDFGGCCAHCFLFFAMEJADKGNA'
+    },
+    success: function(httpResponse) {
+     var result = httpResponse.text;
+     var $ = cheerio.load(result);
+      // console.log(result); 
+     /***********这里解析列表***********/
+     var a = $("a");
+     // console.log(a);
+     $("a").each(function(i,ele){
+      console.log(this.attribs.href.indexOf("xsPj"));
+      var href = this.attribs.href;
+      if(href.indexOf("xsPj") != "-1" && i < 2){
+        AV.Cloud.httpRequest({
+          url: "http://jxgl.cuit.edu.cn/Jxgl/Xs/"+href,
+          headers: {
+            'Accept-Language': 'zh-Hans-CN,zh-Hans;q=0.5',
+            Cookie:'safedog-flow-item=4537954CB97EE7ED989C46F60C2C5768; ASPSESSIONIDSQRSAQCQ=HMPKCJHDIOBIJPHBPMHFKMGF; _gscu_1672982541=53297287wuv58v10; _gscs_1672982541=t6699707294mp2p20|pv:1; _gscbrs_1672982541=1; ASPSESSIONIDQSRTAQCQ=IDFGGCCAHCFLFFAMEJADKGNA'
+          },
+          success: function(httpResponse) {
+           // var result = httpResponse.text;
+           // var $ = cheerio.load(result);
+           var buf = new Buffer(httpResponse.text, 'binary');
+           var result = iconv.decode(buf, 'GBK');
+           // var result = encoding.convert(httpResponse.text, "utf8",'gbk');
+           // var result = iconv.decode(httpResponse.text, 'gb2312');
+           // var $ = cheerio.load(html, {decodeEntities: false});
+           // var input = $("input");
+           var $ = cheerio.load(result);
+           var send = {};
+           var sendString = '';
+           $("input").each(function(i,ele){
+            var name = this.attribs.name;
+            var value = this.attribs.value;
+            if(value == ''){
+              if(i > 16){
+                value = "C";
+              }else{
+                value = "A";
+              }
+              
+            }
+            if(i == 1 || i == 2){
+             // return;
+             // var buf = new Buffer(value, 'binary'); 
+             // value = iconv.encode(buf, "GBK");
+            }
+            sendString = sendString + name + "=" + value;
+            send[name] = value;
+            send['B1.x']="59";
+            send['B1.y']="33";
+           });
+           // console.log(JSON.stringify(send));
+           // console.log(sendString);
+           // console.log(input);
+           console.log(send);
+           AV.Cloud.httpRequest({
+              method: 'POST',
+              url: 'http://jxgl.cuit.edu.cn/Jxgl/Xs/XspjRs.asp',
+              headers: {
+                'Cookie':'safedog-flow-item=4537954CB97EE7ED989C46F60C2C5768; ASPSESSIONIDSQRSAQCQ=HMPKCJHDIOBIJPHBPMHFKMGF; _gscu_1672982541=53297287wuv58v10; _gscs_1672982541=t6699707294mp2p20|pv:1; _gscbrs_1672982541=1; ASPSESSIONIDQSRTAQCQ=IDFGGCCAHCFLFFAMEJADKGNA',
+                'Host': 'jxgl.cuit.edu.cn',
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'Connection': 'Keep-Alive',
+                'User-Agent': 'Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 10.0; WOW64; Trident/8.0; .NET4.0C; .NET4.0E; Shuame; .NET CLR 2.0.50727; .NET CLR 3.0.30729; .NET CLR 3.5.30729; ImapBox; Tablet PC 2.0)',
+                'Accept': 'image/gif, image/jpeg, image/pjpeg, application/x-ms-application, application/xaml+xml, application/x-ms-xbap, */*',
+                'Accept-Language': 'zh-Hans-CN,zh-Hans;q=0.5',
+                'Pragma': 'no-cache',
+                'Accept-Encoding': 'gzip, deflate'
+              },
+              body: send,
+              success: function(httpResponse) {
+                console.log("success");
+                console.log(httpResponse.text);
+                // var html = iconv.decode(httpResponse.text, 'gb2312');
+
+                // var $ = cheerio.load(html);
+
+                // console.log($('h1').text());
+                // console.log(str);
+              },
+              error: function(httpResponse) {
+                // console.log(httpResponse.text);
+                var html = iconv.decode(httpResponse.text, 'gb2312');
+
+                // var $ = cheerio.load(html);
+                var $ = cheerio.load(html, {decodeEntities: false});
+
+                console.log($('body').text());
+                console.error('Request failed with response code ' + httpResponse.status);
+              }
+            });
+         },
+         error:function(error){
+
+         }
+       });
+      }
+     })
+     // var movieDetail = {};
+     // movieDetail.img = $(".poster").attr("src");
+     // movieDetail.name = $(".list-name").text();
+     // movieDetail.star = $(".score-normal").text();
+    },
+    error: function(error){
+
+    }
+  });
+
+
+
+
 // moviesDelete();
 // getMoviesData();
 // getBJMovies();
 
-getNMNewMovie();
+// getNMNewMovie();
 //定时的云引擎函数
  exports.moviesDelete = function(){
    moviesDelete();
