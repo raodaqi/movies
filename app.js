@@ -156,6 +156,26 @@ app.get('/', function(req, res) {
   });
 });
 
+app.get('/easyshow', function(req, res) {
+  res.render('easyshow');
+});
+
+app.get('/about', function(req, res) {
+  res.render('about');
+});
+
+app.get('/gallery', function(req, res) {
+  res.render('gallery');
+});
+
+app.get('/contact', function(req, res) {
+  res.render('contact');
+});
+
+app.get('/404', function(req, res) {
+  res.render('404');
+});
+
 
 
 /*
