@@ -24,6 +24,8 @@ var Buffer = require('buffer').Buffer;
 //调用发送邮件功能
 var nodemailer = require("nodemailer");
 
+var NeedMovie = AV.Object.extend('NeedMovie');
+
 // 加载云代码方法
 app.use(cloud);
 
@@ -95,65 +97,113 @@ app.use('/todos', todos);
 // });
 
 
-app.get('/', function(req, res) {
-  // res.render('index', { currentTime: new Date() });
-  var currentUser = AV.User.current();
-  if(currentUser){
-    var email = currentUser.attributes.email;
-  }else{
-    var email = '';
-  }
-  var query = new AV.Query('Movies');
-  query.notEqualTo('mid', null);
-  // query.equalTo('add', 'YL');
-  query.addDescending('releaseDate');
-  query.find().then(function(results) {
-    // 处理返回的结果数据
-    // console.log(results);
-    // res.render('movie', {results:results});
-    if(email){
-      getAttention(email,"",{
-        success:function(attention){
-          // console.log(results.length);
-          // console.log(attention);
-          var attentionData = [];
-          for(var i = 0; i < results.length; i++){
-            // console.log(results[i].attributes.name+":"+results[i].attributes.name.length);
-            // console.log(results[i].attributes.name.length);
-            for(var j = 0; j < attention.length; j++){
-              // console.log(attention[j].name);
-              // console.log(attention[j].name+":"+attention[j].name.length);
+// app.get('/', function(req, res) {
+//   // res.render('index', { currentTime: new Date() });
+//   var currentUser = AV.User.current();
+//   if(currentUser){
+//     var email = currentUser.attributes.email;
+//   }else{
+//     var email = '';
+//   }
+//   var query = new AV.Query('Movies');
+//   query.notEqualTo('mid', null);
+//   // query.equalTo('add', 'YL');
+//   query.addDescending('releaseDate');
+//   query.find().then(function(results) {
+//     // 处理返回的结果数据
+//     // console.log(results);
+//     // res.render('movie', {results:results});
+//     if(email){
+//       getAttention(email,"",{
+//         success:function(attention){
+//           // console.log(results.length);
+//           // console.log(attention);
+//           var attentionData = [];
+//           for(var i = 0; i < results.length; i++){
+//             // console.log(results[i].attributes.name+":"+results[i].attributes.name.length);
+//             // console.log(results[i].attributes.name.length);
+//             for(var j = 0; j < attention.length; j++){
+//               // console.log(attention[j].name);
+//               // console.log(attention[j].name+":"+attention[j].name.length);
 
-              // 数据库输入的数据存在空格，这里是出去字符串中的空格
-              if(attention[j].name.replace(/\s+/g,"") == results[i].attributes.name.replace(/\s+/g,"")){
-                console.log(attention[j].name.length);
-                console.log(results[i].attributes.mid);
-                  attentionData[j] = {
-                    "name":results[i].attributes.name,
-                    "mid":results[i].attributes.mid,
-                    "type":results[i].attributes.type,
-                    "img":results[i].attributes.img,
-                    "star":results[i].attributes.star,
-                    "releaseDate":results[i].attributes.releaseDate
-                  }
+//               // 数据库输入的数据存在空格，这里是出去字符串中的空格
+//               if(attention[j].name.replace(/\s+/g,"") == results[i].attributes.name.replace(/\s+/g,"")){
+//                 console.log(attention[j].name.length);
+//                 console.log(results[i].attributes.mid);
+//                   attentionData[j] = {
+//                     "name":results[i].attributes.name,
+//                     "mid":results[i].attributes.mid,
+//                     "type":results[i].attributes.type,
+//                     "img":results[i].attributes.img,
+//                     "star":results[i].attributes.star,
+//                     "releaseDate":results[i].attributes.releaseDate
+//                   }
                 
-              }
+//               }
+//             }
+//           }
+//           console.log(attentionData);
+//           res.render('index', {results:results,attentionData:attentionData,email:email});
+//         },
+//         error:function(error){
+//           console.log(error);
+//         }
+//       });
+//     }else{
+//       res.render('index', {results:results,attentionData:'1',email:""});
+//     }
+//   }, function(error) {
+//     console.log('Error: ' + error.code + ' ' + error.message);
+//     res.render('index', {results:error,attentionData:'1',email:""});
+//   });
+// });
+
+app.get('/', function(req, res) {
+  res.render('easyshow');
+});
+
+function ifexitCard(data,callback){
+    var query = new AV.Query('NeedMovie');
+    for(var key in data){
+        query.equalTo(key, data[key]);
+    }
+    query.find().then(function (cardList) {
+        callback.success(cardList);
+    },function (error) {
+        callback.error(error);
+    });
+}
+
+app.post('/addmovie', function(req, res, next) {
+
+    var name = req.body.name;
+
+    if(!name){
+        res.send({code:600,  message:'缺少电影名称'});
+        return;
+    }
+    var data = {
+            name  : name
+        }
+    ifexitCard(data,{
+        success:function(cardList){
+            if(!cardList.length){
+                var needMovie = new NeedMovie();
+                needMovie.set('name', name);
+                needMovie.save().then(function (cardList) {
+                    res.send({code:200,message:'提交成功'});
+                },function(error){
+                    res.send({code:400,  message:'提交失败'});
+                    console.log(error);
+                });
+            }else{
+                res.send({code:300, message:'电影已存在'});
             }
-          }
-          console.log(attentionData);
-          res.render('index', {results:results,attentionData:attentionData,email:email});
         },
         error:function(error){
-          console.log(error);
+            res.send({code:400,  message:'提交失败'});
         }
-      });
-    }else{
-      res.render('index', {results:results,attentionData:'1',email:""});
-    }
-  }, function(error) {
-    console.log('Error: ' + error.code + ' ' + error.message);
-    res.render('index', {results:error,attentionData:'1',email:""});
-  });
+    })
 });
 
 app.get('/easyshow', function(req, res) {
