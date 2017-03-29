@@ -2195,5 +2195,9 @@ app.get('/movieList', function(req, res) {
    sendLowPriceEmail();
  }
 
+ function getComicsData(){
+  console.log("123");
+}
+
 
 module.exports = app;
