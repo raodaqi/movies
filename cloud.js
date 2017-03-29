@@ -40,4 +40,9 @@ AV.Cloud.define("sendLowPriceEmail", function(request, response) {
   console.log("发送低价邮件");
 });
 
+AV.Cloud.define("getComicsData", function(request, response) {
+  // appJs.getComicsData();
+  console.log("获取内涵漫画");
+});
+
 module.exports = AV.Cloud;
