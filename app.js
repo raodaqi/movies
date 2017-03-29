@@ -26,8 +26,6 @@ var nodemailer = require("nodemailer");
 
 var NeedMovie = AV.Object.extend('NeedMovie');
 
-// 加载云代码方法
-app.use(cloud);
 
 // 使用 LeanEngine 中间件
 // （如果没有加载云代码方法请使用此方法，否则会导致部署失败，详细请阅读 LeanEngine 文档。）
@@ -2199,5 +2197,7 @@ app.get('/movieList', function(req, res) {
   console.log("123");
 }
 
+// 加载云代码方法
+app.use(cloud);
 
 module.exports = app;
